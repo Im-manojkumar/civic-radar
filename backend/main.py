@@ -38,27 +38,28 @@ def version():
     return {
         "version": "1.0.0",
         "environment": "production",
-        "api_v1": settings.API_V1_STR
+        "api_v1": settings.API_V1_STR,
+        "database_configured": "sqlite" not in settings.DATABASE_URL
     }
 
-# Database init and router registration
-# Wrapped in try/except so the app still starts even if DB is temporarily unavailable
+# Initialize database tables lazily (no startup event for serverless)
+_db_initialized = False
+
+def ensure_db():
+    global _db_initialized
+    if not _db_initialized:
+        try:
+            from backend.db import init_db
+            init_db()
+            _db_initialized = True
+        except Exception as e:
+            logger.error(f"DB init error: {e}")
+
+# Import and register routers
 try:
-    from backend.db import init_db
     from backend import models
     from backend.routers import auth, policies, regions, datasets, ingest, surveys, ngo_reports, analytics, nlp, alerts, explain, reports, ai
 
-    @app.on_event("startup")
-    def on_startup():
-        logger.info("Starting up Civic Radar Backend...")
-        try:
-            init_db()
-            logger.info("Database initialized successfully.")
-        except Exception as e:
-            logger.error(f"Database init failed: {e}")
-            logger.error(traceback.format_exc())
-
-    # Register Routers
     app.include_router(auth.router, prefix=settings.API_V1_STR)
     app.include_router(policies.router, prefix=settings.API_V1_STR)
     app.include_router(regions.router, prefix=settings.API_V1_STR)
@@ -72,14 +73,16 @@ try:
     app.include_router(explain.router, prefix=settings.API_V1_STR)
     app.include_router(reports.router, prefix=settings.API_V1_STR)
     app.include_router(ai.router, prefix=settings.API_V1_STR)
+
+    # Lazy DB init on first real request
+    @app.on_event("startup")
+    def on_startup():
+        ensure_db()
+
     logger.info("All routers registered successfully.")
 except Exception as e:
     logger.error(f"Failed to load backend modules: {e}")
     logger.error(traceback.format_exc())
-    
-    @app.get(f"{settings.API_V1_STR}/error")
-    def error_info():
-        return {"error": str(e), "detail": "Backend modules failed to load. Check logs."}
 
 if __name__ == "__main__":
     import uvicorn
