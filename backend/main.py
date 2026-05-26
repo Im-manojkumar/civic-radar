@@ -42,22 +42,25 @@ def version():
         "database_configured": "sqlite" not in settings.DATABASE_URL
     }
 
-# Initialize database tables lazily (no startup event for serverless)
-_db_initialized = False
+# Initialize database directly at import time (serverless has no persistent startup)
+db_status = "not initialized"
+try:
+    from backend.db import init_db
+    from backend import models
+    init_db()
+    db_status = "ok"
+    logger.info("Database initialized successfully.")
+except Exception as e:
+    db_status = f"error: {e}"
+    logger.error(f"DB init error: {e}")
+    logger.error(traceback.format_exc())
 
-def ensure_db():
-    global _db_initialized
-    if not _db_initialized:
-        try:
-            from backend.db import init_db
-            init_db()
-            _db_initialized = True
-        except Exception as e:
-            logger.error(f"DB init error: {e}")
+@app.get(f"{settings.API_V1_STR}/debug")
+def debug_info():
+    return {"db_status": db_status, "database_url_set": "sqlite" not in settings.DATABASE_URL}
 
 # Import and register routers
 try:
-    from backend import models
     from backend.routers import auth, policies, regions, datasets, ingest, surveys, ngo_reports, analytics, nlp, alerts, explain, reports, ai
 
     app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -74,11 +77,6 @@ try:
     app.include_router(reports.router, prefix=settings.API_V1_STR)
     app.include_router(ai.router, prefix=settings.API_V1_STR)
 
-    # Lazy DB init on first real request
-    @app.on_event("startup")
-    def on_startup():
-        ensure_db()
-
     logger.info("All routers registered successfully.")
 except Exception as e:
     logger.error(f"Failed to load backend modules: {e}")
@@ -87,3 +85,4 @@ except Exception as e:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
