@@ -1,23 +1,25 @@
 import sys
 import os
-import traceback
 
-# Ensure the project root is on the Python path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# Ensure project root is on Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
+from fastapi import FastAPI
+
+# Create app at module level first — Vercel requires this
+app = FastAPI()
+
+# Now try to import the real backend app (overwrites 'app' on success)
 try:
     from backend.main import app
-except Exception as e:
-    # If backend fails to import, create a minimal app that shows the error
-    from fastapi import FastAPI
-    app = FastAPI()
-    error_detail = traceback.format_exc()
-    
-    @app.get("/{path:path}")
-    def catch_all(path: str = ""):
-        return {
-            "error": "Backend failed to load",
-            "type": type(e).__name__,
-            "message": str(e),
-            "traceback": error_detail
-        }
+except Exception:
+    import traceback
+    err = traceback.format_exc()
+
+    @app.get("/api/v1/health")
+    def health():
+        return {"status": "error", "detail": "Backend failed to load"}
+
+    @app.get("/api/v1/{path:path}")
+    def fallback(path: str = ""):
+        return {"error": "Backend failed to load", "traceback": err}
