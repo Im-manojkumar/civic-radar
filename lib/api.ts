@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Use relative path — Vercel routes /api/v1/* to the Python serverless function
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
+// Hardcoded to ensure we never accidentally hit localhost in production if env is misconfigured
+const baseURL = "/api/v1";
 
 export const api = axios.create({
   baseURL,
