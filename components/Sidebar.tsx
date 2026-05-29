@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, BookOpen, CheckCircle, FileText, HelpCircle, 
   LayoutDashboard, Upload, BarChart2, Zap, Brain, Layers, 
-  AlertTriangle, X 
+  AlertTriangle, X, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,11 +18,13 @@ import { labelsTa } from '@/config/labels.ta';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  isMinimized: boolean;
+  onToggleMinimize: () => void;
   role: Role;
   language: 'en' | 'ta';
 }
 
-export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, isMinimized, onToggleMinimize, role, language }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useAuthStore();
   const t = language === 'en' ? labelsEn : labelsTa;
@@ -61,32 +63,35 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
       {/* Sidebar Content */}
       <aside 
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen flex flex-col",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 left-0 z-50 h-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white transition-all duration-300 ease-in-out md:translate-x-0 flex flex-col",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+          isMinimized ? "w-20" : "w-64"
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 h-16 border-b border-white/5">
-          <Link href={role === 'CITIZEN' ? "/citizen" : "/admin"} className="flex items-center gap-3 group">
-            <div className="relative">
+          <Link href={role === 'CITIZEN' ? "/citizen" : "/admin"} className={cn("flex items-center gap-3 group", isMinimized && "justify-center w-full")}>
+            <div className="relative flex-shrink-0">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-sky-500/20 group-hover:shadow-sky-500/40 transition-shadow">
                 TN
               </div>
               <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-slate-900" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[15px] leading-tight tracking-tight text-white">
-                {uiConfig.theme.logoText}
-              </span>
-              <span className="text-[9px] text-sky-400/70 uppercase tracking-[0.2em] font-semibold">
-                {uiConfig.theme.logoSubText}
-              </span>
-            </div>
+            {!isMinimized && (
+              <div className="flex flex-col overflow-hidden">
+                <span className="font-bold text-[15px] leading-tight tracking-tight text-white whitespace-nowrap">
+                  {uiConfig.theme.logoText}
+                </span>
+                <span className="text-[9px] text-sky-400/70 uppercase tracking-[0.2em] font-semibold whitespace-nowrap">
+                  {uiConfig.theme.logoSubText}
+                </span>
+              </div>
+            )}
           </Link>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden text-slate-400 hover:text-white hover:bg-white/10 rounded-lg" 
+            className="md:hidden text-slate-400 hover:text-white hover:bg-white/10 rounded-lg flex-shrink-0" 
             onClick={onClose}
           >
             <X className="h-5 w-5" />
@@ -94,10 +99,12 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-          <p className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">
-            {role === 'ADMIN' ? 'Administration' : 'Services'}
-          </p>
+        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
+          {!isMinimized && (
+            <p className="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">
+              {role === 'ADMIN' ? 'Administration' : 'Services'}
+            </p>
+          )}
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -105,16 +112,20 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start gap-3 font-medium rounded-xl h-11 transition-all duration-200",
+                    "w-full font-medium rounded-xl h-11 transition-all duration-200",
+                    isMinimized ? "justify-center px-0" : "justify-start gap-3 px-3",
                     isActive 
                       ? "bg-gradient-to-r from-sky-500/20 to-sky-500/5 text-sky-400 hover:text-sky-300 border border-sky-500/20 shadow-sm shadow-sky-500/5" 
                       : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                   )}
+                  title={isMinimized ? item.label : undefined}
                 >
-                  <item.icon className={cn("w-4 h-4", isActive && "text-sky-400")} />
-                  <span className="text-sm">{item.label}</span>
-                  {isActive && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-400" />
+                  <item.icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-sky-400")} />
+                  {!isMinimized && (
+                    <span className="text-sm truncate">{item.label}</span>
+                  )}
+                  {isActive && !isMinimized && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-400 flex-shrink-0" />
                   )}
                 </Button>
               </Link>
@@ -122,29 +133,51 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
           })}
         </nav>
 
-        {/* User Card at Bottom */}
-        <div className="p-3 border-t border-white/5">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+        {/* Footer / Toggle & Profile */}
+        <div className="p-3 border-t border-white/5 space-y-2">
+          {/* Toggle Button */}
+          <Button
+            variant="ghost"
+            onClick={onToggleMinimize}
+            className={cn(
+              "hidden md:flex w-full text-slate-400 hover:text-white hover:bg-white/5 h-10 transition-all",
+              isMinimized ? "justify-center" : "justify-start gap-3 px-3"
+            )}
+            title={isMinimized ? "Expand Sidebar" : "Minimize Sidebar"}
+          >
+            {isMinimized ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+            {!isMinimized && <span className="text-sm font-medium">Minimize</span>}
+          </Button>
+
+          {/* User Profile */}
+          <div className={cn(
+            "flex items-center rounded-xl bg-white/5 border border-white/5 transition-all",
+            isMinimized ? "justify-center p-2" : "gap-3 p-3"
+          )} title={isMinimized ? displayName : undefined}>
             {avatarUrl ? (
               <img 
                 src={avatarUrl} 
                 alt={displayName}
-                className="w-8 h-8 rounded-lg object-cover"
+                className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
                 {initials}
               </div>
             )}
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-slate-200 truncate">{displayName}</p>
-              <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
-            </div>
-            <div className={cn(
-              "w-2 h-2 rounded-full flex-shrink-0",
-              role === 'ADMIN' ? "bg-amber-400" : "bg-emerald-400"
-            )} />
+            {!isMinimized && (
+              <>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-200 truncate">{displayName}</p>
+                  <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
+                </div>
+                <div className={cn(
+                  "w-2 h-2 rounded-full flex-shrink-0",
+                  role === 'ADMIN' ? "bg-amber-400" : "bg-emerald-400"
+                )} />
+              </>
+            )}
           </div>
         </div>
       </aside>

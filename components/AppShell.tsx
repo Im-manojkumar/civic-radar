@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { useAuthStore } from '@/lib/auth';
 import { useTranslation } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 
 interface AppShellProps {
   children?: React.ReactNode;
@@ -13,6 +14,7 @@ interface AppShellProps {
 
 export default function AppShell({ children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [mounted, setMounted] = useState(false);
   
   const { role, isAuthenticated } = useAuthStore();
@@ -57,11 +59,16 @@ export default function AppShell({ children }: AppShellProps) {
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
+        isMinimized={sidebarMinimized}
+        onToggleMinimize={() => setSidebarMinimized(!sidebarMinimized)}
         role={role}
         language={language}
       />
 
-      <div className="flex flex-col flex-1 md:pl-64 transition-all duration-300">
+      <div className={cn(
+        "flex flex-col flex-1 transition-all duration-300",
+        sidebarMinimized ? "md:pl-20" : "md:pl-64"
+      )}>
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full animate-in fade-in duration-300">
