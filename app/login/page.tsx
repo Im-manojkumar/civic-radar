@@ -3,7 +3,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth';
-import { Shield, Users, Globe, ChevronRight, Sparkles } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
+import { Shield, Users, Globe, ChevronRight, Sparkles, Maximize, Minimize } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 declare global {
   interface Window {
@@ -15,12 +17,34 @@ declare global {
 export default function LoginPage() {
   const router = useRouter();
   const { isAuthenticated, role, loginWithGoogle, isLoading } = useAuthStore();
+  const { language, toggleLanguage } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   useEffect(() => {
     if (mounted && isAuthenticated) {
@@ -162,6 +186,29 @@ export default function LoginPage() {
       <div className="relative flex items-center justify-center px-8 py-16 lg:py-0 lg:w-[480px] bg-white">
         {/* Subtle decoration */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 via-amber-400 to-sky-500" />
+        
+        {/* Subtle Top-Right Controls */}
+        <div className="absolute top-4 right-4 flex items-center gap-1">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleFullscreen}
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={toggleLanguage}
+            className="flex gap-1.5 items-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full px-3"
+            title="Toggle Language"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="uppercase text-xs font-bold tracking-wide">{language}</span>
+          </Button>
+        </div>
         
         <div className="w-full max-w-sm space-y-10">
           {/* Welcome text */}
