@@ -20,6 +20,17 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./civic_radar.db"
 
+    # Auth
+    SECRET_KEY: str = "change-me-in-production"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
+
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+
+    # Admin access control — comma-separated email domains and specific emails
+    ADMIN_EMAIL_DOMAINS: str = "veltech.edu.in"
+    ADMIN_EMAILS: str = ""  # e.g. "specific-admin@gmail.com,another@yahoo.com"
+
     class Config:
         case_sensitive = True
         env_file = ".env"

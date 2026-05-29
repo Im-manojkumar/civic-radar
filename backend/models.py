@@ -43,6 +43,8 @@ class User(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     email = Column(String, unique=True, index=True, nullable=True)
+    name = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
     phone = Column(String, unique=True, index=True, nullable=True)
     google_id = Column(String, unique=True, nullable=True)
     role = Column(SqEnum(Role), default=Role.CITIZEN)

@@ -236,7 +236,7 @@ export default function SchemesPage() {
 
         if (mapped.length > 0) setSchemes(mapped);
       } catch (err: any) {
-        setApiError("Backend not reachable, showing demo schemes.");
+        setApiError("Showing default government schemes.");
       } finally {
         setLoading(false);
       }

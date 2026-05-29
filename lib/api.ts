@@ -18,13 +18,16 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
-// Generic response handler
+// Handle unauthorized — redirect to login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized (e.g., redirect to login)
-      console.warn("Unauthorized API call");
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        // Clear stored auth and redirect
+        localStorage.removeItem('civic-radar-auth');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

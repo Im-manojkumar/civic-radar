@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { uiConfig } from '@/config/ui';
-import { Role } from '@/lib/auth';
+import { Role, useAuthStore } from '@/lib/auth';
 import { labelsEn } from '@/config/labels.en';
 import { labelsTa } from '@/config/labels.ta';
 
@@ -24,6 +24,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuthStore();
   const t = language === 'en' ? labelsEn : labelsTa;
 
   const navItems = role === 'ADMIN' ? [
@@ -42,12 +43,16 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
     { label: t.howToApply, href: '/citizen/how-to-apply', icon: HelpCircle },
   ];
 
+  const displayName = user?.name || user?.email?.split('@')[0] || 'User';
+  const avatarUrl = user?.avatar_url;
+  const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
   return (
     <>
       {/* Mobile Overlay */}
       <div 
         className={cn(
-          "fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300",
+          "fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -56,20 +61,24 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
       {/* Sidebar Content */}
       <aside 
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-slate-900 text-white transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen",
+          "fixed top-0 left-0 z-50 h-full w-64 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between p-4 h-16 border-b border-slate-800">
-          <Link href={role === 'CITIZEN' ? "/citizen" : "/admin"} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-tn-gold flex items-center justify-center text-tn-900 font-bold text-xs">
-              TN
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 h-16 border-b border-white/5">
+          <Link href={role === 'CITIZEN' ? "/citizen" : "/admin"} className="flex items-center gap-3 group">
+            <div className="relative">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-sky-500/20 group-hover:shadow-sky-500/40 transition-shadow">
+                TN
+              </div>
+              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-slate-900" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-lg leading-tight tracking-tight text-slate-100">
+              <span className="font-bold text-[15px] leading-tight tracking-tight text-white">
                 {uiConfig.theme.logoText}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-widest">
+              <span className="text-[9px] text-sky-400/70 uppercase tracking-[0.2em] font-semibold">
                 {uiConfig.theme.logoSubText}
               </span>
             </div>
@@ -77,14 +86,18 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden text-slate-400 hover:text-white" 
+            className="md:hidden text-slate-400 hover:text-white hover:bg-white/10 rounded-lg" 
             onClick={onClose}
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        <nav className="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-4rem)]">
+        {/* Navigation */}
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+          <p className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">
+            {role === 'ADMIN' ? 'Administration' : 'Services'}
+          </p>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -92,19 +105,48 @@ export function Sidebar({ isOpen, onClose, role, language }: SidebarProps) {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start gap-3 mb-1 font-normal",
+                    "w-full justify-start gap-3 font-medium rounded-xl h-11 transition-all duration-200",
                     isActive 
-                      ? "bg-tn-600 text-white hover:bg-tn-500 hover:text-white" 
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
+                      ? "bg-gradient-to-r from-sky-500/20 to-sky-500/5 text-sky-400 hover:text-sky-300 border border-sky-500/20 shadow-sm shadow-sky-500/5" 
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                   )}
                 >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
+                  <item.icon className={cn("w-4 h-4", isActive && "text-sky-400")} />
+                  <span className="text-sm">{item.label}</span>
+                  {isActive && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-400" />
+                  )}
                 </Button>
               </Link>
             );
           })}
         </nav>
+
+        {/* User Card at Bottom */}
+        <div className="p-3 border-t border-white/5">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+            {avatarUrl ? (
+              <img 
+                src={avatarUrl} 
+                alt={displayName}
+                className="w-8 h-8 rounded-lg object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
+                {initials}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-200 truncate">{displayName}</p>
+              <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
+            </div>
+            <div className={cn(
+              "w-2 h-2 rounded-full flex-shrink-0",
+              role === 'ADMIN' ? "bg-amber-400" : "bg-emerald-400"
+            )} />
+          </div>
+        </div>
       </aside>
     </>
   );
