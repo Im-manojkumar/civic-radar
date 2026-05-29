@@ -10,10 +10,13 @@ router = APIRouter()
 
 @router.post("/auth/google", response_model=Token)
 def google_login(payload: GoogleLoginSchema, db: Session = Depends(get_db)):
-    user = auth_service.authenticate_google_token(db, payload.token)
-    if not user:
-        raise HTTPException(status_code=400, detail="Invalid Google Token")
-    return auth_service.login_access_token(user)
+    try:
+        user = auth_service.authenticate_google_token(db, payload.token)
+        if not user:
+            raise HTTPException(status_code=400, detail="User could not be verified")
+        return auth_service.login_access_token(user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/auth/request-otp")
 def request_otp(payload: OTPRequestSchema, db: Session = Depends(get_db)):

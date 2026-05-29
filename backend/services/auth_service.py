@@ -111,13 +111,13 @@ def authenticate_google_token(db: Session, token: str):
             google_id = decoded.get("sub", "")
         except Exception as e:
             logger.error(f"Token decode failed: {e}")
-            return None
+            raise ValueError(f"Token decode failed: {e}")
     except Exception as e:
         logger.error(f"Google token verification failed: {e}")
-        return None
+        raise ValueError(f"Google verification failed: {e}")
     
     if not email:
-        return None
+        raise ValueError("Token missing email field")
     
     # Find or create user
     user = db.query(User).filter(User.google_id == google_id).first()
