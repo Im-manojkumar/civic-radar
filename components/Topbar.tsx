@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Menu, Globe, Shield, Users, LogOut, Bell } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, Globe, Shield, Users, LogOut, Bell, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/auth';
 import { useTranslation } from '@/lib/i18n';
@@ -15,6 +15,27 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const { user, role, logout } = useAuthStore();
   const { language, toggleLanguage } = useTranslation();
   const router = useRouter();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -45,6 +66,17 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Fullscreen Toggle */}
+        <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleFullscreen}
+            className="hidden sm:flex text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-full"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+        >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+        </Button>
+
         {/* Language Toggle */}
         <Button 
             variant="ghost" 
