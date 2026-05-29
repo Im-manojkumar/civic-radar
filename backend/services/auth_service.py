@@ -101,7 +101,9 @@ def authenticate_google_token(db: Session, token: str):
             # Decode the payload (second part of JWT)
             payload = token.split(".")[1]
             # Add padding
-            payload += "=" * (4 - len(payload) % 4)
+            padding_needed = len(payload) % 4
+            if padding_needed:
+                payload += "=" * (4 - padding_needed)
             decoded = json.loads(base64.urlsafe_b64decode(payload))
             email = decoded.get("email", "")
             name = decoded.get("name", "")
