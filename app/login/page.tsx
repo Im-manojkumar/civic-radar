@@ -17,7 +17,7 @@ declare global {
 export default function LoginPage() {
   const router = useRouter();
   const { isAuthenticated, role, loginWithGoogle, isLoading } = useAuthStore();
-  const { language, toggleLanguage } = useTranslation();
+  const { language, toggleLanguage, t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -145,30 +145,30 @@ export default function LoginPage() {
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-slate-950 animate-pulse" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">Civic Radar</h1>
-              <p className="text-sky-400/80 text-xs font-semibold uppercase tracking-[0.2em]">Tamil Nadu</p>
+              <h1 className="text-2xl font-black text-white tracking-tight">{t.appTitle || 'Civic Radar'}</h1>
+              <p className="text-sky-400/80 text-xs font-semibold uppercase tracking-[0.2em]">{t.login_state || 'Tamil Nadu'}</p>
             </div>
           </div>
 
           {/* Headline */}
           <div className="space-y-4">
             <h2 className="text-4xl lg:text-5xl font-black text-white leading-[1.1] tracking-tight">
-              Government services,{' '}
+              {t.login_hero_title1 || 'Government services,'}{' '}
               <span className="bg-gradient-to-r from-sky-400 to-amber-400 bg-clip-text text-transparent">
-                simplified.
+                {t.login_hero_title2 || 'simplified.'}
               </span>
             </h2>
             <p className="text-slate-400 text-lg leading-relaxed max-w-md">
-              Access Tamil Nadu government schemes, check eligibility, report civic issues — all in one place.
+              {t.login_hero_desc || 'Access Tamil Nadu government schemes, check eligibility, report civic issues — all in one place.'}
             </p>
           </div>
 
           {/* Feature pills */}
           <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
             {[
-              { icon: Users, label: 'Citizen Services' },
-              { icon: Shield, label: 'Secure & Verified' },
-              { icon: Globe, label: 'Tamil & English' },
+              { icon: Users, label: t.login_feat1 || 'Citizen Services' },
+              { icon: Shield, label: t.login_feat2 || 'Secure & Verified' },
+              { icon: Globe, label: t.login_feat3 || 'Tamil & English' },
             ].map((feat, i) => (
               <div
                 key={i}
@@ -215,13 +215,13 @@ export default function LoginPage() {
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 text-sky-600 text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5" />
-              Welcome to Civic Radar TN
+              {t.login_welcome || 'Welcome to Civic Radar TN'}
             </div>
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Sign in to continue
+              {t.login_signin || 'Sign in to continue'}
             </h3>
             <p className="text-slate-500 text-sm leading-relaxed">
-              Use your Google account to access government services. Government officials with <span className="font-semibold text-sky-600">@veltech.edu.in</span> emails get admin access.
+              {t.login_desc || 'Use your Google account to access government services. Government officials with @veltech.edu.in emails get admin access.'}
             </p>
           </div>
 
@@ -232,10 +232,10 @@ export default function LoginPage() {
             {!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
               <div className="text-center p-4 rounded-xl bg-amber-50 border border-amber-100">
                 <p className="text-amber-700 text-sm font-medium">
-                  Google OAuth not configured yet.
+                  {t.login_oauth_missing || 'Google OAuth not configured yet.'}
                 </p>
                 <p className="text-amber-600 text-xs mt-1">
-                  Set NEXT_PUBLIC_GOOGLE_CLIENT_ID in environment variables.
+                  {t.login_oauth_desc || 'Set NEXT_PUBLIC_GOOGLE_CLIENT_ID in environment variables.'}
                 </p>
               </div>
             )}
@@ -243,7 +243,7 @@ export default function LoginPage() {
             {isLoading && (
               <div className="flex items-center justify-center gap-3 p-4">
                 <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-slate-500">Authenticating...</span>
+                <span className="text-sm text-slate-500">{t.login_authenticating || 'Authenticating...'}</span>
               </div>
             )}
 
@@ -260,16 +260,16 @@ export default function LoginPage() {
               <div className="w-full border-t border-slate-200" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-white text-slate-400 font-medium">How it works</span>
+              <span className="px-3 bg-white text-slate-400 font-medium">{t.login_how_works || 'How it works'}</span>
             </div>
           </div>
 
           {/* Info cards */}
           <div className="space-y-3">
             {[
-              { step: '1', title: 'Sign in with Google', desc: 'Quick, secure authentication' },
-              { step: '2', title: 'Access services', desc: 'Schemes, eligibility & more' },
-              { step: '3', title: 'Report & track', desc: 'Civic issues in your area' },
+              { step: '1', title: t.login_step1_title || 'Sign in with Google', desc: t.login_step1_desc || 'Quick, secure authentication' },
+              { step: '2', title: t.login_step2_title || 'Access services', desc: t.login_step2_desc || 'Schemes, eligibility & more' },
+              { step: '3', title: t.login_step3_title || 'Report & track', desc: t.login_step3_desc || 'Civic issues in your area' },
             ].map((item, i) => (
               <div
                 key={i}
@@ -289,10 +289,10 @@ export default function LoginPage() {
 
           {/* Footer */}
           <p className="text-center text-xs text-slate-400">
-            By signing in, you agree to the{' '}
-            <span className="text-sky-500 hover:underline cursor-pointer">Terms of Service</span>
-            {' '}and{' '}
-            <span className="text-sky-500 hover:underline cursor-pointer">Privacy Policy</span>
+            {t.login_footer1 || 'By signing in, you agree to the'}{' '}
+            <span className="text-sky-500 hover:underline cursor-pointer">{t.login_footer_tos || 'Terms of Service'}</span>
+            {' '}{t.login_footer_and || 'and'}{' '}
+            <span className="text-sky-500 hover:underline cursor-pointer">{t.login_footer_privacy || 'Privacy Policy'}</span>
           </p>
         </div>
       </div>

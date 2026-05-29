@@ -92,5 +92,31 @@ export const labelsTa = {
     confidence: 'நம்பிக்கை',
     evidence: 'ஆதாரம்',
     actions: 'செயல்கள்',
-    upload: 'பதிவேற்றம்'
+    upload: 'பதிவேற்றம்',
+    
+    // Login Page
+    login_state: 'தமிழ்நாடு',
+    login_hero_title1: 'அரசு சேவைகள்,',
+    login_hero_title2: 'எளிமையாக்கப்பட்டுள்ளன.',
+    login_hero_desc: 'தமிழ்நாடு அரசு திட்டங்கள், தகுதி அறிய, மக்கள் குறைகளை தெரிவிக்க — அனைத்தும் ஒரே இடத்தில்.',
+    login_feat1: 'குடிமக்கள் சேவைகள்',
+    login_feat2: 'பாதுகாப்பானது',
+    login_feat3: 'தமிழ் & ஆங்கிலம்',
+    login_welcome: 'குடிமை ரேடார் த.நா விற்கு வருக',
+    login_signin: 'தொடர உள்நுழையவும்',
+    login_desc: 'அரசு சேவைகளை அணுக உங்கள் Google கணக்கை பயன்படுத்தவும். @veltech.edu.in மின்னஞ்சல் உள்ள அரசு அதிகாரிகள் நிர்வாகி அணுகல் பெறுவார்கள்.',
+    login_oauth_missing: 'Google OAuth இன்னும் அமைக்கப்படவில்லை.',
+    login_oauth_desc: 'NEXT_PUBLIC_GOOGLE_CLIENT_ID ஐ environment variables இல் அமைக்கவும்.',
+    login_authenticating: 'உள்நுழைகிறது...',
+    login_how_works: 'எப்படி செயல்படுகிறது',
+    login_step1_title: 'Google மூலம் உள்நுழைக',
+    login_step1_desc: 'விரைவான, பாதுகாப்பான உள்நுழைவு',
+    login_step2_title: 'சேவைகளை அணுகவும்',
+    login_step2_desc: 'திட்டங்கள், தகுதி மற்றும் பல',
+    login_step3_title: 'புகாரளி & பின் தொடர்',
+    login_step3_desc: 'உங்கள் பகுதியில் உள்ள குறைகள்',
+    login_footer1: 'உள்நுழைவதன் மூலம், நீங்கள் ஏற்றுக்கொள்கிறீர்கள்:',
+    login_footer_tos: 'சேவை விதிமுறைகள்',
+    login_footer_and: 'மற்றும்',
+    login_footer_privacy: 'தனியுரிமை கொள்கை'
 };

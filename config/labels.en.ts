@@ -92,5 +92,31 @@ export const labelsEn = {
     confidence: 'Confidence',
     evidence: 'Evidence',
     actions: 'Actions',
-    upload: 'Upload Data'
+    upload: 'Upload Data',
+    
+    // Login Page
+    login_state: 'Tamil Nadu',
+    login_hero_title1: 'Government services,',
+    login_hero_title2: 'simplified.',
+    login_hero_desc: 'Access Tamil Nadu government schemes, check eligibility, report civic issues — all in one place.',
+    login_feat1: 'Citizen Services',
+    login_feat2: 'Secure & Verified',
+    login_feat3: 'Tamil & English',
+    login_welcome: 'Welcome to Civic Radar TN',
+    login_signin: 'Sign in to continue',
+    login_desc: 'Use your Google account to access government services. Government officials with @veltech.edu.in emails get admin access.',
+    login_oauth_missing: 'Google OAuth not configured yet.',
+    login_oauth_desc: 'Set NEXT_PUBLIC_GOOGLE_CLIENT_ID in environment variables.',
+    login_authenticating: 'Authenticating...',
+    login_how_works: 'How it works',
+    login_step1_title: 'Sign in with Google',
+    login_step1_desc: 'Quick, secure authentication',
+    login_step2_title: 'Access services',
+    login_step2_desc: 'Schemes, eligibility & more',
+    login_step3_title: 'Report & track',
+    login_step3_desc: 'Civic issues in your area',
+    login_footer1: 'By signing in, you agree to the',
+    login_footer_tos: 'Terms of Service',
+    login_footer_and: 'and',
+    login_footer_privacy: 'Privacy Policy'
 };
