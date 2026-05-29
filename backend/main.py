@@ -57,7 +57,21 @@ except Exception as e:
 
 @app.get(f"{settings.API_V1_STR}/debug")
 def debug_info():
-    return {"db_status": db_status, "database_url_set": "sqlite" not in settings.DATABASE_URL}
+    db_check = "pending"
+    try:
+        from backend.db import SessionLocal
+        from backend.models import User
+        db = SessionLocal()
+        user = db.query(User).first()
+        if user:
+            db_check = f"found user {user.email}, columns exist!"
+        else:
+            db_check = "no users, but query successful"
+        db.close()
+    except Exception as e:
+        db_check = f"Error: {e}"
+    
+    return {"db_status": db_status, "database_url_set": "sqlite" not in settings.DATABASE_URL, "query_test": db_check}
 
 # Import and register routers
 try:
