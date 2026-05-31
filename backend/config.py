@@ -26,6 +26,13 @@ class Settings(BaseSettings):
 
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    @field_validator("GOOGLE_CLIENT_ID", mode="before")
+    def populate_google_client_id(cls, v, info):
+        if not v and "NEXT_PUBLIC_GOOGLE_CLIENT_ID" in info.data:
+            return info.data["NEXT_PUBLIC_GOOGLE_CLIENT_ID"]
+        return v
 
     # Admin access control — comma-separated email domains and specific emails
     ADMIN_EMAIL_DOMAINS: str = "veltech.edu.in"

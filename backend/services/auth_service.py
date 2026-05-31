@@ -79,11 +79,14 @@ def authenticate_google_token(db: Session, token: str):
         from google.oauth2 import id_token
         from google.auth.transport import requests as google_requests
         
+        import os
+        client_id = settings.GOOGLE_CLIENT_ID or os.environ.get("NEXT_PUBLIC_GOOGLE_CLIENT_ID") or ""
+        
         # Verify the token with Google
         idinfo = id_token.verify_oauth2_token(
             token, 
             google_requests.Request(), 
-            settings.GOOGLE_CLIENT_ID
+            client_id
         )
         
         email = idinfo.get("email", "")
