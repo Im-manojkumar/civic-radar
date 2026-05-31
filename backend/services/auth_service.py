@@ -69,7 +69,9 @@ def login_access_token(user: User):
             "name": user.name,
             "avatar_url": user.avatar_url,
             "role": user.role.value if hasattr(user.role, 'value') else user.role,
-            "is_active": user.is_active
+            "is_active": getattr(user, 'is_active', True),
+            "karma_points": getattr(user, 'karma_points', 0),
+            "created_at": user.created_at.isoformat() if hasattr(user, 'created_at') and user.created_at else None
         }
     }
 
