@@ -103,9 +103,15 @@ export default function CitizenPage() {
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold">
-                <Sparkles className="w-3 h-3" />
-                {language === 'en' ? 'Govt of Tamil Nadu' : 'தமிழ்நாடு அரசு'}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold">
+                  <Sparkles className="w-3 h-3" />
+                  {language === 'en' ? 'Govt of Tamil Nadu' : 'தமிழ்நாடு அரசு'}
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold">
+                  <Clock className="w-3 h-3" />
+                  {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'ta-IN', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                </div>
               </div>
               <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
                 {language === 'en' ? `Welcome, ${firstName}!` : `வணக்கம், ${firstName}!`}
@@ -128,11 +134,11 @@ export default function CitizenPage() {
                   onChange={(e) => setDistrict(e.target.value)}
                   className="w-full bg-transparent font-bold text-white outline-none cursor-pointer text-sm appearance-none"
                 >
-                  <option value="Chennai" className="text-slate-900">Chennai</option>
-                  <option value="Coimbatore" className="text-slate-900">Coimbatore</option>
-                  <option value="Madurai" className="text-slate-900">Madurai</option>
-                  <option value="Salem" className="text-slate-900">Salem</option>
-                  <option value="Trichy" className="text-slate-900">Trichy</option>
+                  <option value="Chennai" className="text-slate-900 dark:bg-slate-800 dark:text-slate-100">Chennai</option>
+                  <option value="Coimbatore" className="text-slate-900 dark:bg-slate-800 dark:text-slate-100">Coimbatore</option>
+                  <option value="Madurai" className="text-slate-900 dark:bg-slate-800 dark:text-slate-100">Madurai</option>
+                  <option value="Salem" className="text-slate-900 dark:bg-slate-800 dark:text-slate-100">Salem</option>
+                  <option value="Trichy" className="text-slate-900 dark:bg-slate-800 dark:text-slate-100">Trichy</option>
                 </select>
               </div>
             </div>
@@ -144,16 +150,16 @@ export default function CitizenPage() {
           {stats.map((stat, i) => (
             <div 
               key={i} 
-              className="bg-white rounded-xl p-4 border border-slate-100 card-hover"
+              className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-800 card-hover"
               style={{ animationDelay: `${i * 100}ms` }}
             >
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-slate-50 ${stat.color}`}>
+                <div className={`p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 ${stat.color}`}>
                   <stat.icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xl font-black text-slate-900 tracking-tight">{stat.value}</p>
-                  <p className="text-[11px] text-slate-400 font-medium">{stat.label}</p>
+                  <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -164,22 +170,22 @@ export default function CitizenPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {actions.map((action, index) => (
             <Link key={index} href={action.href} className="group block h-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 rounded-2xl">
-              <Card className={`h-full p-6 transition-all duration-300 hover:shadow-xl ${action.shadow} border-slate-100 hover:border-slate-200 rounded-2xl card-hover`}>
+              <Card className={`h-full p-6 transition-all duration-300 hover:shadow-xl ${action.shadow} dark:hover:shadow-none border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl card-hover`}>
                 <div className="flex flex-col h-full justify-between">
                   <div className="flex justify-between items-start mb-6">
-                    <div className={`p-3.5 rounded-2xl ${action.bg} ${action.text} transition-transform group-hover:scale-110 duration-300`}>
+                    <div className={`p-3.5 rounded-2xl ${action.bg} dark:bg-slate-800 ${action.text} dark:text-sky-400 transition-transform group-hover:scale-110 duration-300`}>
                       <action.icon className="w-7 h-7" />
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 translate-x-2 duration-300">
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 translate-x-2 duration-300">
+                      <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-300" />
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-slate-700 transition-colors tracking-tight">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors tracking-tight">
                       {action.title}
                     </h3>
-                    <p className="text-slate-400 mt-1.5 text-sm font-medium leading-relaxed">
+                    <p className="text-slate-400 dark:text-slate-500 mt-1.5 text-sm font-medium leading-relaxed">
                       {action.desc}
                     </p>
                   </div>

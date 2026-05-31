@@ -43,19 +43,19 @@ export default function AppShell({ children }: AppShellProps) {
   }, [mounted, isAuthenticated, role, pathname, router]);
 
   if (!mounted) {
-    return <div className="min-h-screen w-full bg-slate-50" />;
+    return <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950" />;
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-slate-50">
+    <div className="flex min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 

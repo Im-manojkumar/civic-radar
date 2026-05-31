@@ -183,7 +183,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel — Login Form */}
-      <div className="relative flex items-center justify-center px-8 py-16 lg:py-0 lg:w-[480px] bg-white">
+      <div className="relative flex items-center justify-center px-8 py-16 lg:py-0 lg:w-[480px] bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800">
         {/* Subtle decoration */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 via-amber-400 to-sky-500" />
         
@@ -217,10 +217,10 @@ export default function LoginPage() {
               <Sparkles className="w-3.5 h-3.5" />
               {t.login_welcome || 'Welcome to Civic Radar TN'}
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               {t.login_signin || 'Sign in to continue'}
             </h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               {t.login_desc || 'Use your Google account to access government services. Government officials with @veltech.edu.in emails get admin access.'}
             </p>
           </div>
@@ -260,7 +260,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-slate-200" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-white text-slate-400 font-medium">{t.login_how_works || 'How it works'}</span>
+              <span className="px-3 bg-white dark:bg-slate-950 text-slate-400 font-medium">{t.login_how_works || 'How it works'}</span>
             </div>
           </div>
 
@@ -273,14 +273,14 @@ export default function LoginPage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group"
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
               >
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0">
                   {item.step}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-                  <p className="text-xs text-slate-400">{item.desc}</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 transition-colors flex-shrink-0" />
               </div>

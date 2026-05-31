@@ -93,10 +93,10 @@ export default function ReportIssuePage() {
         
         {/* Header Section */}
         <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                 {t.report_title}
             </h1>
-            <p className="text-slate-500 text-lg">
+            <p className="text-slate-500 dark:text-slate-400 text-lg">
                 {t.report_subtitle}
             </p>
         </div>
@@ -112,9 +112,9 @@ export default function ReportIssuePage() {
             </div>
         )}
 
-        <Card className="border-slate-200 shadow-sm overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-6">
-                <CardTitle className="text-xl font-bold text-slate-800">
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden bg-white dark:bg-slate-900">
+            <CardHeader className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 pb-6">
+                <CardTitle className="text-xl font-bold text-slate-800 dark:text-white">
                     {language === 'en' ? 'Issue Details' : 'புகார் விவரங்கள்'}
                 </CardTitle>
             </CardHeader>
@@ -230,10 +230,10 @@ export default function ReportIssuePage() {
 
         {/* Nearby Issues / Smart Grievance */}
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
                 {language === 'en' ? 'Nearby Issues' : 'அருகிலுள்ள புகார்கள்'}
             </h2>
-            <p className="text-slate-500">
+            <p className="text-slate-500 dark:text-slate-400">
                 {language === 'en' ? 'Check if someone has already reported your problem and upvote it instead of creating a duplicate.' : 'உங்கள் புகார் ஏற்கனவே பதிவாகியுள்ளதா என சரிபார்த்து, புதிய புகார் அளிப்பதற்கு பதிலாக ஆதரவளிக்கவும்.'}
             </p>
 
@@ -242,17 +242,17 @@ export default function ReportIssuePage() {
                     <p className="text-slate-400 italic">No recent issues found in your area.</p>
                 ) : (
                     issues.map(issue => (
-                        <Card key={issue.id} className="border-slate-200">
+                        <Card key={issue.id} className="border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                             <CardContent className="p-4 flex items-start justify-between gap-4">
                                 <div className="space-y-1 flex-1">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-slate-800">{issue.category}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${issue.status === 'RESOLVED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        <span className="font-semibold text-slate-800 dark:text-slate-200">{issue.category}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${issue.status === 'RESOLVED' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'}`}>
                                             {issue.status}
                                         </span>
                                     </div>
-                                    <p className="text-slate-600 text-sm line-clamp-2">{issue.description}</p>
-                                    <div className="flex items-center gap-3 text-xs text-slate-400 pt-1">
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{issue.description}</p>
+                                    <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500 pt-1">
                                         <div className="flex items-center gap-1">
                                             <MapPin className="w-3 h-3" />
                                             {issue.location || 'Unknown location'}
@@ -266,11 +266,11 @@ export default function ReportIssuePage() {
                                         variant="outline" 
                                         size="sm"
                                         onClick={() => handleUpvote(issue.id)}
-                                        className="h-9 w-12 border-slate-200 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200"
+                                        className="h-9 w-12 border-slate-200 dark:border-slate-700 hover:bg-sky-50 dark:hover:bg-sky-900/40 hover:text-sky-600 dark:hover:text-sky-400 hover:border-sky-200 dark:hover:border-sky-800 dark:bg-slate-800 dark:text-slate-300"
                                     >
                                         <ThumbsUp className="w-4 h-4" />
                                     </Button>
-                                    <span className="text-xs font-bold text-slate-600">{issue.upvotes}</span>
+                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{issue.upvotes}</span>
                                 </div>
                             </CardContent>
                         </Card>

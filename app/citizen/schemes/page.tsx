@@ -380,10 +380,10 @@ export default function SchemesPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-2">
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">
               {language === 'en' ? 'Government Schemes' : 'அரசு நலத்திட்டங்கள்'}
             </h1>
-            <p className="text-slate-500">
+            <p className="text-slate-500 dark:text-slate-400">
               {language === 'en' ? 'Find benefits you are eligible for.' : 'உங்களுக்கு தகுதியான சலுகைகளைக் கண்டறியவும்.'}
             </p>
           </div>
@@ -403,7 +403,7 @@ export default function SchemesPage() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
             <Input
               placeholder={language === 'en' ? 'Search schemes...' : 'திட்டங்களைத் தேடுக...'}
-              className="pl-9 bg-white shadow-sm"
+              className="pl-9 bg-white dark:bg-slate-900 shadow-sm border-slate-200 dark:border-slate-800"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search schemes"
@@ -423,7 +423,7 @@ export default function SchemesPage() {
                 flex items-center gap-2 px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-500
                 ${activeTab === cat.id 
                   ? 'bg-tn-600 text-white shadow-md' 
-                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}
               `}
             >
               <cat.icon className="w-4 h-4" aria-hidden="true" />
@@ -438,7 +438,7 @@ export default function SchemesPage() {
             filteredSchemes.map((scheme) => (
               <Card 
                 key={scheme.id} 
-                className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 border-slate-200 cursor-pointer flex flex-col h-full focus-visible:ring-2 focus-visible:ring-tn-500 outline-none"
+                className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer flex flex-col h-full focus-visible:ring-2 focus-visible:ring-tn-500 outline-none"
                 onClick={() => setSelectedScheme(scheme)}
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') setSelectedScheme(scheme); }}
@@ -450,10 +450,10 @@ export default function SchemesPage() {
                 
                 <div className="p-6 flex flex-col h-full">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="p-3 bg-tn-50 text-tn-600 rounded-xl group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-tn-50 dark:bg-tn-900/40 text-tn-600 dark:text-tn-400 rounded-xl group-hover:scale-110 transition-transform">
                       <scheme.icon className="w-6 h-6" aria-hidden="true" />
                     </div>
-                    <Badge variant="secondary" className={scheme.status === 'Upcoming' ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}>
+                    <Badge variant="secondary" className={scheme.status === 'Upcoming' ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/60" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"}>
                       {activeTab === 'All' 
                         ? (language === 'en' ? scheme.category : (CATEGORIES.find(c => c.id === scheme.category)?.labelTa)) 
                         : (scheme.status === 'Upcoming' 
@@ -462,14 +462,14 @@ export default function SchemesPage() {
                     </Badge>
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-tn-700 transition-colors line-clamp-2 leading-tight">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-tn-700 dark:group-hover:text-tn-400 transition-colors line-clamp-2 leading-tight">
                     {getTitle(scheme)}
                   </h3>
-                  <p className="text-slate-500 text-sm line-clamp-3 mb-4 flex-1">
+                  <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-1">
                     {getDesc(scheme)}
                   </p>
 
-                  <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-medium text-tn-600">
+                  <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-sm font-medium text-tn-600 dark:text-tn-400">
                     <span>{language === 'en' ? 'View Details' : 'விவரங்களை காண்க'}</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                   </div>
@@ -503,20 +503,20 @@ export default function SchemesPage() {
           aria-labelledby="modal-title"
         >
           <div 
-            className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]"
+            className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <div className="flex items-center gap-3">
-                 <div className="p-2 bg-tn-100 text-tn-700 rounded-lg">
+                 <div className="p-2 bg-tn-100 dark:bg-tn-900/40 text-tn-700 dark:text-tn-400 rounded-lg">
                     <selectedScheme.icon className="w-5 h-5" aria-hidden="true" />
                  </div>
                  <div>
-                    <h2 id="modal-title" className="text-lg font-bold text-slate-800 leading-tight">
+                    <h2 id="modal-title" className="text-lg font-bold text-slate-800 dark:text-white leading-tight">
                         {getTitle(selectedScheme)}
                     </h2>
-                    <span className="text-xs text-slate-500 font-medium">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                         {language === 'en' ? selectedScheme.category : (CATEGORIES.find(c => c.id === selectedScheme.category)?.labelTa)}
                     </span>
                  </div>
@@ -537,12 +537,12 @@ export default function SchemesPage() {
               </div>
 
               {/* Benefits */}
-              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                 <h4 className="text-sm font-bold text-emerald-800 uppercase tracking-wide mb-2 flex items-center">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 rounded-xl p-4">
+                 <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide mb-2 flex items-center">
                     <Heart className="w-4 h-4 mr-2" aria-hidden="true" />
                     {language === 'en' ? 'Benefits' : 'பயன்கள்'}
                  </h4>
-                 <p className="text-emerald-900 font-medium text-lg">
+                 <p className="text-emerald-900 dark:text-emerald-100 font-medium text-lg">
                     {getBenefits(selectedScheme)}
                  </p>
               </div>
@@ -550,13 +550,13 @@ export default function SchemesPage() {
               {/* Eligibility & Documents Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center">
-                        <CheckCircle className="w-4 h-4 mr-2 text-tn-600" aria-hidden="true" />
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center">
+                        <CheckCircle className="w-4 h-4 mr-2 text-tn-600 dark:text-tn-400" aria-hidden="true" />
                         {language === 'en' ? 'Eligibility' : 'தகுதிகள்'}
                     </h4>
                     <ul className="space-y-2">
                         {getEligibility(selectedScheme).map((item, idx) => (
-                            <li key={idx} className="flex items-start text-sm text-slate-600">
+                            <li key={idx} className="flex items-start text-sm text-slate-600 dark:text-slate-300">
                                 <span className="w-1.5 h-1.5 bg-tn-400 rounded-full mt-1.5 mr-2 flex-shrink-0" aria-hidden="true"></span>
                                 {item}
                             </li>
@@ -565,14 +565,14 @@ export default function SchemesPage() {
                  </div>
 
                  <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center">
-                        <FileText className="w-4 h-4 mr-2 text-tn-600" aria-hidden="true" />
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center">
+                        <FileText className="w-4 h-4 mr-2 text-tn-600 dark:text-tn-400" aria-hidden="true" />
                         {language === 'en' ? 'Documents Required' : 'தேவையான ஆவணங்கள்'}
                     </h4>
                     <ul className="space-y-2">
                         {getDocs(selectedScheme).map((item, idx) => (
-                            <li key={idx} className="flex items-start text-sm text-slate-600">
-                                <span className="w-1.5 h-1.5 bg-slate-300 rounded-full mt-1.5 mr-2 flex-shrink-0" aria-hidden="true"></span>
+                            <li key={idx} className="flex items-start text-sm text-slate-600 dark:text-slate-300">
+                                <span className="w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full mt-1.5 mr-2 flex-shrink-0" aria-hidden="true"></span>
                                 {item}
                             </li>
                         ))}
@@ -582,7 +582,7 @@ export default function SchemesPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-end gap-3">
               <Button variant="outline" onClick={() => setSelectedScheme(null)}>
                 {language === 'en' ? 'Close' : 'மூடு'}
               </Button>
