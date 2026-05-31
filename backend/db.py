@@ -45,14 +45,13 @@ def ensure_missing_columns():
         "ALTER TABLE issues ADD COLUMN photo_url TEXT;",
         "ALTER TABLE issues ADD COLUMN ai_analysis TEXT;"
     ]
-    with engine.connect() as conn:
-        for query in queries:
-            try:
+    for query in queries:
+        try:
+            with engine.begin() as conn:
                 conn.execute(text(query))
-                conn.commit()
-            except Exception:
-                # Column likely already exists, or table doesn't exist yet
-                pass
+        except Exception as e:
+            # Column likely already exists, or table doesn't exist yet
+            pass
 
 def init_db():
     """Create all tables. Safe to call multiple times."""
