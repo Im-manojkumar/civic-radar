@@ -11,6 +11,23 @@ export const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    try {
+      const authData = localStorage.getItem('civic-radar-auth');
+      if (authData) {
+        const { state } = JSON.parse(authData);
+        if (state?.token) {
+          config.headers['Authorization'] = `Bearer ${state.token}`;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  return config;
+});
+
 export const setAuthToken = (token: string | null) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

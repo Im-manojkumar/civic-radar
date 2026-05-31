@@ -17,7 +17,7 @@ export default function AppShell({ children }: AppShellProps) {
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [mounted, setMounted] = useState(false);
   
-  const { role, isAuthenticated } = useAuthStore();
+  const { role, isAuthenticated, refreshUser } = useAuthStore();
   const { language } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -33,6 +33,9 @@ export default function AppShell({ children }: AppShellProps) {
     if (!isAuthenticated) {
       router.replace('/login');
       return;
+    } else {
+      // Sync user data on mount
+      refreshUser();
     }
 
     // Role guard — citizens can't access admin pages
