@@ -228,23 +228,26 @@ export default function CitizenProfilePage() {
           {/* ── Profile Header ── */}
           <section className="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-700/60 bg-white dark:bg-gray-900/70 shadow-sm">
             {/* Decorative gradient bar */}
-            <div className="h-28 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-90" />
+            <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-90" />
 
-            <div className="px-6 sm:px-8 pb-8 -mt-14 flex flex-col sm:flex-row items-center sm:items-end gap-5">
-              {/* Avatar */}
-              {user?.avatar_url ? (
-                <img
-                  src={user.avatar_url}
-                  alt={user.name ?? 'Avatar'}
-                  className="w-28 h-28 rounded-2xl border-4 border-white dark:border-gray-900 shadow-lg object-cover"
-                />
-              ) : (
-                <div className="w-28 h-28 rounded-2xl border-4 border-white dark:border-gray-900 shadow-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-white">{initials}</span>
-                </div>
-              )}
+            <div className="px-6 sm:px-8 pb-8 flex flex-col sm:flex-row gap-5">
+              {/* Avatar (pulled up to overlap gradient) */}
+              <div className="-mt-16 z-10 flex justify-center sm:justify-start">
+                {user?.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    alt={user.name ?? 'Avatar'}
+                    className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900 shadow-xl object-cover bg-white"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900 shadow-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-white">{initials}</span>
+                  </div>
+                )}
+              </div>
 
-              <div className="flex-1 text-center sm:text-left">
+              {/* Text Info */}
+              <div className="flex-1 text-center sm:text-left mt-2 sm:mt-3">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {user?.name ?? 'Citizen'}
                 </h1>
@@ -256,7 +259,7 @@ export default function CitizenProfilePage() {
                     <Shield className="w-3 h-3" />
                     {user?.role ?? 'Citizen'}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 font-medium">
                     <Calendar className="w-3 h-3" />
                     Member since {memberSince}
                   </span>

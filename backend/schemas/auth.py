@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 class Token(BaseModel):
     access_token: str
@@ -29,6 +30,7 @@ class UserResponse(BaseModel):
     role: str
     is_active: bool
     karma_points: int = 0
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
