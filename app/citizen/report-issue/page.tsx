@@ -10,6 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { labelsEn } from '@/config/labels.en';
 import { labelsTa } from '@/config/labels.ta';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the map component to avoid SSR issues with Leaflet
+const IssuesMap = dynamic(() => import('@/components/IssuesMap'), {
+  ssr: false,
+  loading: () => <div className="w-full h-[400px] bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center animate-pulse"><MapPin className="w-8 h-8 text-slate-300" /></div>
+});
 
 export default function ReportIssuePage() {
   const { language, refreshUser } = useAuthStore();
@@ -25,8 +32,23 @@ export default function ReportIssuePage() {
   
   const fetchIssues = async () => {
     try {
-      const res = await api.get('/issues?limit=5');
-      setIssues(res.data);
+      const res = await api.get('/issues?limit=10');
+      // Mock latitude and longitude for issues that don't have them (for demo purposes)
+      // Center around Chennai: 13.0827, 80.2707
+      const mappedIssues = res.data.map((issue: any, index: number) => {
+        if (!issue.lat || !issue.lng) {
+          // Add some random scatter around Chennai
+          const scatterLat = (Math.random() - 0.5) * 0.1;
+          const scatterLng = (Math.random() - 0.5) * 0.1;
+          return {
+            ...issue,
+            lat: 13.0827 + scatterLat,
+            lng: 80.2707 + scatterLng
+          };
+        }
+        return issue;
+      });
+      setIssues(mappedIssues);
     } catch (e) {
       console.error(e);
     }
@@ -238,6 +260,12 @@ export default function ReportIssuePage() {
             </p>
 
             <div className="space-y-4">
+                {issues.length > 0 && (
+                    <div className="mb-6">
+                        <IssuesMap issues={issues} onUpvote={handleUpvote} language={language as 'en' | 'ta'} />
+                    </div>
+                )}
+                
                 {issues.length === 0 ? (
                     <p className="text-slate-400 italic">No recent issues found in your area.</p>
                 ) : (

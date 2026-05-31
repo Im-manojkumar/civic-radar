@@ -32,6 +32,7 @@ interface Scheme {
   docsTa: string[];
   icon: React.ElementType;
   status?: 'Active' | 'Upcoming';
+  lifeEvents?: string[];
 }
 
 type BackendPolicy = {
@@ -271,9 +272,17 @@ const CATEGORIES: { id: SchemeCategory; labelEn: string; labelTa: string; icon: 
   { id: 'Welfare', labelEn: 'Welfare', labelTa: 'நலத்திட்டங்கள்', icon: Users },
 ];
 
+const LIFE_EVENTS = [
+  { id: 'higher-edu', labelEn: 'Higher Education', labelTa: 'உயர்கல்வி', icon: BookOpen },
+  { id: 'women-emp', labelEn: 'Women Support', labelTa: 'பெண்கள் ஆதரவு', icon: Sparkles },
+  { id: 'housing', labelEn: 'Housing Help', labelTa: 'வீட்டு வசதி', icon: Home },
+  { id: 'health-crisis', labelEn: 'Medical Care', labelTa: 'மருத்துவ உதவி', icon: Stethoscope },
+];
+
 export default function SchemesPage() {
   const { language } = useAuthStore();
   const [activeTab, setActiveTab] = useState<SchemeCategory>('All');
+  const [activeLifeEvent, setActiveLifeEvent] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
   const [schemes, setSchemes] = useState<Scheme[]>(SCHEMES_DATA);
@@ -316,6 +325,16 @@ export default function SchemesPage() {
       // policies list becomes your raw input
       const raw: any[] = allPolicies;
 
+          const getLifeEvents = (title: string, desc: string, sector: string) => {
+             const text = (title + " " + desc + " " + sector).toLowerCase();
+             const events: string[] = [];
+             if (text.includes('college') || text.includes('education') || text.includes('student') || text.includes('school')) events.push('higher-edu');
+             if (text.includes('women') || text.includes('girl') || text.includes('magalir') || text.includes('பெண்')) events.push('women-emp');
+             if (text.includes('house') || text.includes('illam') || text.includes('வீடு')) events.push('housing');
+             if (text.includes('health') || text.includes('medical') || text.includes('hospital') || text.includes('மருத்துவ')) events.push('health-crisis');
+             return events;
+          };
+
         const mapped: Scheme[] = raw.map((p, idx) => ({
           id: p.id ?? String(idx),
           category: (
@@ -335,6 +354,7 @@ export default function SchemesPage() {
           eligibilityTa: p.eligibility?.length ? p.eligibility : ["அதிகாரப்பூர்வ தகுதி விதிகளை பார்க்கவும்"],
           docsEn: p.documents_required?.length ? p.documents_required : ["Check required documents"],
           docsTa: p.documents_required?.length ? p.documents_required : ["தேவையான ஆவணங்களை பார்க்கவும்"],
+          lifeEvents: getLifeEvents(p.title || p.name || '', p.description || '', String(p.sector)),
           icon:
                 String(p.sector).toLowerCase().includes("health") ? Stethoscope :
                 String(p.sector).toLowerCase().includes("education") ? GraduationCap :
@@ -358,11 +378,17 @@ export default function SchemesPage() {
 
   // Filter Logic
   const filteredSchemes = schemes.filter(scheme => {
+    // If a life event is active, it overrides category filtering
+    const matchesLifeEvent = activeLifeEvent ? scheme.lifeEvents?.includes(activeLifeEvent) : true;
     const matchesCategory = activeTab === 'All' || scheme.category === activeTab;
     const matchesSearch = 
       scheme.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) || 
       scheme.titleTa.includes(searchQuery) ||
       scheme.descEn.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    if (activeLifeEvent) {
+      return matchesLifeEvent && matchesSearch;
+    }
     return matchesCategory && matchesSearch;
   });
 
@@ -411,17 +437,43 @@ export default function SchemesPage() {
           </div>
         </div>
 
+        {/* Life Events Bundles (Singapore LifeSG Style) */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+            {language === 'en' ? 'Life Events & Needs' : 'வாழ்க்கை நிகழ்வுகள் & தேவைகள்'}
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {LIFE_EVENTS.map(event => (
+              <button
+                key={event.id}
+                onClick={() => {
+                  setActiveLifeEvent(activeLifeEvent === event.id ? null : event.id);
+                  if (activeTab !== 'All') setActiveTab('All');
+                }}
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-200 text-center ${activeLifeEvent === event.id ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-300 dark:hover:border-slate-700'}`}
+              >
+                <div className={`p-3 rounded-full mb-3 ${activeLifeEvent === event.id ? 'bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                  <event.icon className="w-6 h-6" />
+                </div>
+                <span className={`font-semibold text-sm ${activeLifeEvent === event.id ? 'text-sky-700 dark:text-sky-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                  {language === 'en' ? event.labelEn : event.labelTa}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Sector Tabs */}
         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide" role="tablist" aria-label="Scheme Categories">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               role="tab"
-              aria-selected={activeTab === cat.id}
-              onClick={() => setActiveTab(cat.id)}
+              aria-selected={activeTab === cat.id && !activeLifeEvent}
+              onClick={() => { setActiveTab(cat.id); setActiveLifeEvent(null); }}
               className={`
                 flex items-center gap-2 px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-500
-                ${activeTab === cat.id 
+                ${activeTab === cat.id && !activeLifeEvent
                   ? 'bg-tn-600 text-white shadow-md' 
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}
               `}
