@@ -16,10 +16,10 @@ except Exception:
     import traceback
     err = traceback.format_exc()
 
-    @app.get("/api/v1/health")
+    @app.api_route("/api/v1/health", methods=["GET", "POST"])
     def health():
         return {"status": "error", "detail": "Backend failed to load"}
 
-    @app.get("/api/v1/{path:path}")
+    @app.api_route("/api/v1/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
     def fallback(path: str = ""):
         return {"error": "Backend failed to load", "traceback": err}
