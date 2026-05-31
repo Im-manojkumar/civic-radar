@@ -50,6 +50,7 @@ class User(Base):
     role = Column(SqEnum(Role), default=Role.CITIZEN)
     language_preference = Column(String, default="en")
     is_active = Column(Boolean, default=True)
+    karma_points = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     issues = relationship("Issue", back_populates="reporter")
@@ -120,12 +121,48 @@ class Issue(Base):
     reporter_id = Column(String, ForeignKey("users.id"), nullable=True)
     region_id = Column(String, ForeignKey("regions.id"), nullable=True)
     
+    assigned_zone = Column(String, nullable=True)
+    assigned_officer = Column(String, nullable=True)
+    
+    upvotes = Column(Integer, default=0)
+    
     ai_analysis = Column(Text, nullable=True)
+    photo_url = Column(Text, nullable=True)  # Base64 data URI or external URL
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     reporter = relationship("User", back_populates="issues")
     region = relationship("Region", back_populates="issues")
+    upvote_records = relationship("IssueUpvote", back_populates="issue")
+    status_updates = relationship("IssueStatusUpdate", back_populates="issue", order_by="IssueStatusUpdate.created_at")
+
+class IssueUpvote(Base):
+    __tablename__ = "issue_upvotes"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    issue_id = Column(String, ForeignKey("issues.id"))
+    user_id = Column(String, ForeignKey("users.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    issue = relationship("Issue", back_populates="upvote_records")
+    
+    __table_args__ = (
+        Index('idx_issue_user_upvote', 'issue_id', 'user_id', unique=True),
+    )
+
+class IssueStatusUpdate(Base):
+    __tablename__ = "issue_status_updates"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    issue_id = Column(String, ForeignKey("issues.id"), nullable=False)
+    old_status = Column(SqEnum(IssueStatus), nullable=False)
+    new_status = Column(SqEnum(IssueStatus), nullable=False)
+    comment = Column(Text, nullable=True)
+    updated_by_id = Column(String, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    issue = relationship("Issue", back_populates="status_updates")
+    updated_by = relationship("User")
 
 # Signals & Analytics
 class SignalDefinition(Base):

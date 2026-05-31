@@ -3,6 +3,7 @@ export const labelsTa = {
     dashboard: 'கண்ணோட்டம்',
     reportIssue: 'குறை தீர்க்க',
     myReports: 'எனது புகார்கள்',
+    myIssues: 'என் புகார்கள்',
     analytics: 'பகுப்பாய்வு',
     settings: 'அமைப்புகள்',
     login: 'உள்நுழைய',
@@ -20,9 +21,11 @@ export const labelsTa = {
     recentActivity: 'சமீபத்திய செயல்பாடுகள்',
     issueDistribution: 'புகார் விநியோகம்',
     trendAnalysis: 'போக்கு பகுப்பாய்வு',
-    aiInsight: 'AI உதவி',
-    noReports: 'இதுவரை எந்த புகாரும் இல்லை.',
-    enterDescription: 'எ.கா., தெரு குழாயில் தண்ணீர் இல்லை',
+    aiInsight: 'ஸ்மார்ட் உதவியாளர்',
+    noReports: 'இதுவரை எந்த புகாரும் சமர்ப்பிக்கப்படவில்லை.',
+    noIssuesTitle: "நீங்கள் இன்னும் எந்த புகாரையும் பதிவு செய்யவில்லை.",
+    noIssuesSubtitle: 'மாற்றத்தை உருவாக்கத் தொடங்குங்கள்!',
+    enterDescription: 'எ.கா., தெரு குழாயில் தண்ணீர் இல்லை, குப்பை எடுக்கப்படவில்லை',
     reports: 'புகார்கள்',
     resolved: 'சரிசெய்யப்பட்டது',
     pending: 'நிலுவையில்',
@@ -37,6 +40,15 @@ export const labelsTa = {
     schemes: 'அரசு நலத்திட்டங்கள்',
     eligibility: 'தகுதிச் சோதனை',
     howToApply: 'விண்ணப்பிப்பது எப்படி',
+    volunteer: 'தன்னார்வலர்',
+    
+    // Citizen Dashboard
+    recentUpdates: 'அறிவிப்புகள் & செய்திகள்',
+    trackingIssues: 'புகார்களை கண்காணித்தல்',
+    volunteerTitle: 'குடிமை தன்னார்வலராகுங்கள்',
+    volunteerDesc: 'உங்கள் சமூகத்தை மேம்படுத்த அரசுடன் கைகோர்க்கவும்.',
+    applyVolunteer: 'விண்ணப்பிக்கவும்',
+    noRecentIssues: 'கண்காணிக்க சமீபத்திய புகார்கள் இல்லை.',
 
     // Schemes Page
     scheme_midday: 'சத்துணவுத் திட்டம்',

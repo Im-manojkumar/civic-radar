@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, BookOpen, CheckCircle, FileText, HelpCircle, 
   LayoutDashboard, Upload, BarChart2, Zap, Brain, Layers, 
-  AlertTriangle, X, PanelLeftClose, PanelLeftOpen
+  AlertTriangle, X, PanelLeftClose, PanelLeftOpen, ClipboardList, Activity, Map, User, Heart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,7 @@ export function Sidebar({ isOpen, onClose, isMinimized, onToggleMinimize, role, 
 
   const navItems = role === 'ADMIN' ? [
     { label: t.dashboard, href: '/admin', icon: LayoutDashboard },
+    { label: 'Issues CRM', href: '/admin/issues', icon: ClipboardList },
     { label: t.ingestion, href: '/admin/ingestion', icon: Upload },
     { label: t.baseline, href: '/admin/baseline', icon: BarChart2 },
     { label: t.deviations, href: '/admin/deviations', icon: Zap },
@@ -42,6 +43,9 @@ export function Sidebar({ isOpen, onClose, isMinimized, onToggleMinimize, role, 
     { label: t.schemes, href: '/citizen/schemes', icon: BookOpen },
     { label: t.eligibility, href: '/citizen/eligibility', icon: CheckCircle },
     { label: t.reportIssue, href: '/citizen/report-issue', icon: FileText },
+    { label: 'My Issues', href: '/citizen/my-issues', icon: Activity },
+    { label: 'Profile & Karma', href: '/citizen/profile', icon: User },
+    { label: t.volunteer, href: '/citizen/volunteer', icon: Heart },
     { label: t.howToApply, href: '/citizen/how-to-apply', icon: HelpCircle },
   ];
 

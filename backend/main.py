@@ -75,7 +75,7 @@ def debug_info():
 
 # Import and register routers
 try:
-    from backend.routers import auth, policies, regions, datasets, ingest, surveys, ngo_reports, analytics, nlp, alerts, explain, reports, ai
+    from backend.routers import auth, policies, regions, datasets, ingest, surveys, ngo_reports, analytics, nlp, alerts, explain, reports, ai, issues, uploads
 
     app.include_router(auth.router, prefix=settings.API_V1_STR)
     app.include_router(policies.router, prefix=settings.API_V1_STR)
@@ -90,6 +90,8 @@ try:
     app.include_router(explain.router, prefix=settings.API_V1_STR)
     app.include_router(reports.router, prefix=settings.API_V1_STR)
     app.include_router(ai.router, prefix=settings.API_V1_STR)
+    app.include_router(issues.router, prefix=settings.API_V1_STR)
+    app.include_router(uploads.router, prefix=settings.API_V1_STR)
 
     logger.info("All routers registered successfully.")
 except Exception as e:

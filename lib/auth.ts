@@ -4,6 +4,7 @@ import { api, setAuthToken } from './api';
 
 export type Role = 'CITIZEN' | 'ADMIN';
 export type Language = 'en' | 'ta';
+export type Theme = 'light' | 'dark';
 
 interface User {
   id: string;
@@ -12,6 +13,8 @@ interface User {
   avatar_url?: string;
   role: Role;
   is_active?: boolean;
+  karma_points?: number;
+  created_at?: string;
 }
 
 interface AuthState {
@@ -19,22 +22,26 @@ interface AuthState {
   user: User | null;
   role: Role;
   language: Language;
+  theme: Theme;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (token: string, user: User) => void;
   loginWithGoogle: (googleToken: string) => Promise<{ success: boolean; error?: string }>;
+  refreshUser: () => Promise<void>;
   logout: () => void;
   setRole: (role: Role) => void;
   setLanguage: (lang: Language) => void;
+  toggleTheme: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       token: null,
       user: null,
       role: 'CITIZEN',
       language: 'en',
+      theme: 'light',
       isAuthenticated: false,
       isLoading: false,
       
@@ -66,6 +73,15 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       
+      refreshUser: async () => {
+        try {
+          const response = await api.get('/auth/me');
+          set({ user: response.data });
+        } catch (error) {
+          console.error("Failed to refresh user", error);
+        }
+      },
+      
       logout: () => {
         setAuthToken(null);
         set({ token: null, user: null, isAuthenticated: false, role: 'CITIZEN' });
@@ -76,7 +92,14 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setRole: (role) => set({ role }),
-      setLanguage: (language) => set({ language })
+      setLanguage: (language) => set({ language }),
+      toggleTheme: () => {
+        const newTheme = get().theme === 'light' ? 'dark' : 'light';
+        set({ theme: newTheme });
+        if (typeof document !== 'undefined') {
+          document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        }
+      }
     }),
     {
       name: 'civic-radar-auth',

@@ -3,6 +3,7 @@ export const labelsEn = {
     dashboard: 'Overview',
     reportIssue: 'Fix My Area',
     myReports: 'My Complaints',
+    myIssues: 'My Issues',
     analytics: 'Analytics',
     settings: 'Settings',
     login: 'Login',
@@ -22,6 +23,8 @@ export const labelsEn = {
     trendAnalysis: 'Trend Analysis',
     aiInsight: 'Smart Helper',
     noReports: 'No reports submitted yet.',
+    noIssuesTitle: "You haven't reported any issues yet.",
+    noIssuesSubtitle: 'Start making a difference!',
     enterDescription: 'e.g., No water in street tap, Garbage not collected',
     reports: 'Reports',
     resolved: 'Resolved',
@@ -37,6 +40,15 @@ export const labelsEn = {
     schemes: 'Govt Benefits',
     eligibility: 'Check Eligibility',
     howToApply: 'How to Apply',
+    volunteer: 'Volunteer',
+    
+    // Citizen Dashboard
+    recentUpdates: 'Announcements & Updates',
+    trackingIssues: 'Tracking Issues',
+    volunteerTitle: 'Become a Civic Volunteer',
+    volunteerDesc: 'Join hands with the government to improve your community.',
+    applyVolunteer: 'Apply Now',
+    noRecentIssues: 'No recent issues to track.',
     
     // Schemes Page
     scheme_midday: 'Midday Meal Scheme',

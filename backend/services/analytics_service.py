@@ -2,10 +2,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, timedelta
 from typing import List, Optional
-from backend.models import NumericRecord, BaselineStats, AnomalyEvent, SignalDefinition
+from backend.models import NumericRecord, BaselineStats, AnomalyEvent, SignalDefinition, Issue, Region, IssueStatus
 from backend.analytics.baseline import BaselineModel
 from backend.analytics.deviations import DeviationDetector
 import logging
+from fpdf import FPDF
+import io
 
 logger = logging.getLogger("civic_radar")
 
@@ -152,3 +154,128 @@ def run_deviation_detection(
                 
     db.commit()
     return anomalies_detected
+
+def get_ward_leaderboard(db: Session):
+    """
+    Groups issues by region_id, calculates avg resolution time for RESOLVED issues.
+    """
+    issues = db.query(Issue).filter(Issue.status == IssueStatus.RESOLVED).all()
+    
+    region_stats = {}
+    for issue in issues:
+        if not issue.region_id or not issue.updated_at or not issue.created_at:
+            continue
+        
+        resolve_time = (issue.updated_at - issue.created_at).total_seconds()
+        
+        if issue.region_id not in region_stats:
+            region_stats[issue.region_id] = {"total_time": 0, "count": 0}
+            
+        region_stats[issue.region_id]["total_time"] += resolve_time
+        region_stats[issue.region_id]["count"] += 1
+        
+    leaderboard = []
+    for r_id, stats in region_stats.items():
+        region = db.query(Region).filter(Region.id == r_id).first()
+        region_name = region.name if region else r_id
+        avg_time_hours = (stats["total_time"] / stats["count"]) / 3600
+        leaderboard.append({
+            "region_id": r_id,
+            "region_name": region_name,
+            "resolved_issues": stats["count"],
+            "avg_resolution_time_hours": round(avg_time_hours, 2)
+        })
+        
+    # Sort by fastest resolving
+    leaderboard.sort(key=lambda x: x["avg_resolution_time_hours"])
+    return leaderboard
+
+def get_predictive_analytics(db: Session):
+    """
+    Mocks predictive analytics by finding the most common issue category per region
+    and predicting a high risk of it recurring.
+    """
+    issues = db.query(Issue).all()
+    
+    region_categories = {}
+    for issue in issues:
+        if not issue.region_id or not issue.category:
+            continue
+            
+        if issue.region_id not in region_categories:
+            region_categories[issue.region_id] = {}
+            
+        if issue.category not in region_categories[issue.region_id]:
+            region_categories[issue.region_id][issue.category] = 0
+            
+        region_categories[issue.region_id][issue.category] += 1
+        
+    predictions = []
+    for r_id, cats in region_categories.items():
+        if not cats: continue
+        
+        # Get most frequent category
+        top_category = max(cats, key=cats.get)
+        count = cats[top_category]
+        
+        region = db.query(Region).filter(Region.id == r_id).first()
+        region_name = region.name if region else r_id
+        
+        # Mock ML probability based on frequency
+        probability = min(0.95, 0.4 + (count * 0.05))
+        
+        predictions.append({
+            "region_id": r_id,
+            "region_name": region_name,
+            "predicted_issue": top_category,
+            "risk_probability": round(probability, 2),
+            "historical_cases": count
+        })
+        
+    # Sort by highest risk
+    predictions.sort(key=lambda x: x["risk_probability"], reverse=True)
+    return predictions
+
+def generate_impact_report(db: Session) -> io.BytesIO:
+    leaderboard = get_ward_leaderboard(db)
+    predictions = get_predictive_analytics(db)
+    
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Title
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Civic Radar - Automated Impact Report", ln=True, align="C")
+    pdf.ln(10)
+    
+    # Leaderboard
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(0, 10, "Ward Leaderboard (Fastest Resolution)", ln=True)
+    pdf.set_font("Arial", '', 12)
+    
+    if not leaderboard:
+        pdf.cell(0, 10, "No resolved issues found.", ln=True)
+    else:
+        for item in leaderboard[:5]: # Top 5
+            pdf.cell(0, 10, f"- {item['region_name']}: {item['avg_resolution_time_hours']} hours avg ({item['resolved_issues']} resolved)", ln=True)
+            
+    pdf.ln(10)
+    
+    # Predictive
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(0, 10, "Predictive Analytics (High Risk)", ln=True)
+    pdf.set_font("Arial", '', 12)
+    
+    if not predictions:
+        pdf.cell(0, 10, "No data for predictions.", ln=True)
+    else:
+        for item in predictions[:5]:
+            prob_percent = int(item['risk_probability'] * 100)
+            pdf.cell(0, 10, f"- {item['region_name']}: {item['predicted_issue']} ({prob_percent}% risk)", ln=True)
+            
+    pdf_buffer = io.BytesIO()
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    pdf_buffer.write(pdf_bytes)
+    pdf_buffer.seek(0)
+    return pdf_buffer
+

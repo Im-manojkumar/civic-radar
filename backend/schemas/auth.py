@@ -28,6 +28,7 @@ class UserResponse(BaseModel):
     phone: str | None = None
     role: str
     is_active: bool
+    karma_points: int = 0
 
     class Config:
         from_attributes = True

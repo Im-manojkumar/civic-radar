@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Send, Loader2, CheckCircle, ThumbsUp } from 'lucide-react';
+import { api } from '@/lib/api';
 import AppShell from '@/components/AppShell';
 import { useAuthStore } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,14 +12,29 @@ import { labelsEn } from '@/config/labels.en';
 import { labelsTa } from '@/config/labels.ta';
 
 export default function ReportIssuePage() {
-  const { language } = useAuthStore();
+  const { language, refreshUser } = useAuthStore();
   const t = language === 'en' ? labelsEn : labelsTa;
 
   const [category, setCategory] = useState('Delay');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [issues, setIssues] = useState<any[]>([]);
+  
+  const fetchIssues = async () => {
+    try {
+      const res = await api.get('/issues?limit=5');
+      setIssues(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchIssues();
+  }, []);
 
   // Categories with Translations
   const categories = [
@@ -30,23 +46,45 @@ export default function ReportIssuePage() {
     { value: 'Other', label: language === 'en' ? 'Other' : 'மற்றவை' },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) return;
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        setDescription('');
-        setLocation('');
-        setCategory('Delay');
+    try {
+      await api.post('/issues', {
+        title: `${category} Issue`,
+        description,
+        category,
+        location,
+        photo_url: photoUrl,
+        region_id: 'R001' // Mock region for demo
+      });
+      setIsSuccess(true);
+      setDescription('');
+      setLocation('');
+      setPhotoUrl(null);
+      setCategory('Delay');
+      fetchIssues();
+      refreshUser(); // Update Karma Points
 
-        // Hide success message after 5 seconds
-        setTimeout(() => setIsSuccess(false), 5000);
-    }, 1500);
+      setTimeout(() => setIsSuccess(false), 5000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpvote = async (id: string) => {
+    try {
+      await api.post(`/issues/${id}/upvote`);
+      fetchIssues(); // Refresh list to get new upvote count
+      refreshUser(); // Update Karma Points
+    } catch (error: any) {
+      alert(error.response?.data?.detail || "Could not upvote");
+    }
   };
 
   return (
@@ -134,6 +172,40 @@ export default function ReportIssuePage() {
                         </div>
                     </div>
 
+                    {/* Photo Upload Input (Optional) */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            {language === 'en' ? 'Photo Evidence' : 'புகைப்பட சான்று'} <span className="text-slate-400 font-normal">({language === 'en' ? 'Optional' : 'விருப்பம்'})</span>
+                        </label>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                        setPhotoUrl(reader.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                            className="cursor-pointer file:text-slate-700"
+                        />
+                        {photoUrl && (
+                            <div className="mt-2 relative inline-block">
+                                <img src={photoUrl} alt="Preview" className="h-32 rounded-md object-cover border border-slate-200" />
+                                <button
+                                    type="button"
+                                    onClick={() => setPhotoUrl(null)}
+                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-sm hover:bg-red-600 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Submit Button */}
                     <Button 
                         type="submit" 
@@ -155,6 +227,57 @@ export default function ReportIssuePage() {
                 </form>
             </CardContent>
         </Card>
+
+        {/* Nearby Issues / Smart Grievance */}
+        <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-slate-800">
+                {language === 'en' ? 'Nearby Issues' : 'அருகிலுள்ள புகார்கள்'}
+            </h2>
+            <p className="text-slate-500">
+                {language === 'en' ? 'Check if someone has already reported your problem and upvote it instead of creating a duplicate.' : 'உங்கள் புகார் ஏற்கனவே பதிவாகியுள்ளதா என சரிபார்த்து, புதிய புகார் அளிப்பதற்கு பதிலாக ஆதரவளிக்கவும்.'}
+            </p>
+
+            <div className="space-y-4">
+                {issues.length === 0 ? (
+                    <p className="text-slate-400 italic">No recent issues found in your area.</p>
+                ) : (
+                    issues.map(issue => (
+                        <Card key={issue.id} className="border-slate-200">
+                            <CardContent className="p-4 flex items-start justify-between gap-4">
+                                <div className="space-y-1 flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-slate-800">{issue.category}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${issue.status === 'RESOLVED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                            {issue.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-slate-600 text-sm line-clamp-2">{issue.description}</p>
+                                    <div className="flex items-center gap-3 text-xs text-slate-400 pt-1">
+                                        <div className="flex items-center gap-1">
+                                            <MapPin className="w-3 h-3" />
+                                            {issue.location || 'Unknown location'}
+                                        </div>
+                                        <span>•</span>
+                                        <span>{new Date(issue.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center gap-1 min-w-[60px]">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleUpvote(issue.id)}
+                                        className="h-9 w-12 border-slate-200 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200"
+                                    >
+                                        <ThumbsUp className="w-4 h-4" />
+                                    </Button>
+                                    <span className="text-xs font-bold text-slate-600">{issue.upvotes}</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
+            </div>
+        </div>
       </div>
     </AppShell>
   );

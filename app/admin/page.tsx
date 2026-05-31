@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { api } from '@/lib/api';
 import { 
   LayoutDashboard, Upload, BarChart2, Zap, Brain, Layers, AlertTriangle, 
-  Calendar, MapPin, Filter, ArrowUpRight, ArrowDownRight, Users, Activity
+  Calendar, MapPin, Filter, ArrowUpRight, ArrowDownRight, Users, Activity, FileText
 } from 'lucide-react';
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Tooltip, ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis } from 'recharts';
 import AppShell from '@/components/AppShell';
 import { useAuthStore } from '@/lib/auth';
 import { labelsEn } from '@/config/labels.en';
@@ -27,10 +28,46 @@ export default function AdminPage() {
   const { language } = useAuthStore();
   const t = language === 'en' ? labelsEn : labelsTa;
   
-  // State for Filters
   const [region, setRegion] = useState('All');
   const [sector, setSector] = useState('All');
   const [period, setPeriod] = useState('7d');
+
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [predictions, setPredictions] = useState<any[]>([]);
+  const [issues, setIssues] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [leadRes, predRes, issuesRes] = await Promise.all([
+          api.get('/analytics/leaderboard'),
+          api.get('/analytics/predictive'),
+          api.get('/issues?limit=200')
+        ]);
+        setLeaderboard(leadRes.data);
+        setPredictions(predRes.data);
+        setIssues(issuesRes.data);
+      } catch (err) {
+        console.error("Failed to load analytics", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleDownloadReport = async () => {
+    try {
+      const response = await api.get('/analytics/impact-report', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'civic_radar_impact_report.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Failed to download report", err);
+    }
+  };
 
   const pipelineLinks = [
     { 
@@ -91,9 +128,18 @@ export default function AdminPage() {
                 {language === 'en' ? 'Welcome back, District Collector' : 'திரும்ப வருக, மாவட்ட ஆட்சியர்'}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-500 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-              <Calendar className="w-4 h-4 text-slate-400" />
-              <span className="font-medium">{new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'ta-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-slate-500 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+                <Calendar className="w-4 h-4 text-slate-400" />
+                <span className="font-medium">{new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'ta-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+              <button 
+                onClick={handleDownloadReport}
+                className="flex items-center gap-2 text-sm text-white bg-tn-600 hover:bg-tn-700 px-4 py-2 rounded-full shadow-sm font-bold transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                {language === 'en' ? 'Download Impact Report' : 'அறிக்கையைப் பதிவிறக்கவும்'}
+              </button>
             </div>
           </div>
 
@@ -269,6 +315,122 @@ export default function AdminPage() {
                       <span className="text-slate-500">Peak: <strong className="text-slate-800">80 Reports</strong></span>
                       <Link href="/admin/baseline" className="text-tn-600 font-bold hover:underline">View Full Analytics &rarr;</Link>
                   </div>
+              </div>
+          </div>
+
+          {/* Advanced Analytics Grids */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+              {/* Leaderboard */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-emerald-500" />
+                    Ward Leaderboard (Fastest Resolution)
+                  </h3>
+                  <div className="space-y-3">
+                      {leaderboard.length === 0 ? (
+                          <p className="text-sm text-slate-400">No data available.</p>
+                      ) : (
+                          leaderboard.map((lb, i) => (
+                              <div key={lb.region_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                  <div className="flex items-center gap-3">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-600'}`}>
+                                          #{i + 1}
+                                      </div>
+                                      <div>
+                                          <p className="font-bold text-slate-800">{lb.region_name}</p>
+                                          <p className="text-xs text-slate-500">{lb.resolved_issues} issues resolved</p>
+                                      </div>
+                                  </div>
+                                  <div className="text-right">
+                                      <p className="font-black text-emerald-600">{lb.avg_resolution_time_hours}h</p>
+                                      <p className="text-[10px] text-slate-400 uppercase font-bold">Avg Time</p>
+                                  </div>
+                              </div>
+                          ))
+                      )}
+                  </div>
+              </div>
+
+              {/* Predictive Analytics */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-purple-500" />
+                    Predictive Analytics (High Risk Forecast)
+                  </h3>
+                  <div className="space-y-3">
+                      {predictions.length === 0 ? (
+                          <p className="text-sm text-slate-400">No data available.</p>
+                      ) : (
+                          predictions.map((pred, i) => (
+                              <div key={pred.region_id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                  <div className="flex items-center gap-3">
+                                      <div className="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
+                                          <AlertTriangle className="w-5 h-5" />
+                                      </div>
+                                      <div>
+                                          <p className="font-bold text-slate-800">{pred.predicted_issue}</p>
+                                          <p className="text-xs text-slate-500">{pred.region_name}</p>
+                                      </div>
+                                  </div>
+                                  <div className="text-right">
+                                      <p className="font-black text-red-600">{Math.round(pred.risk_probability * 100)}%</p>
+                                      <p className="text-[10px] text-slate-400 uppercase font-bold">Risk Prob</p>
+                                  </div>
+                              </div>
+                          ))
+                      )}
+                  </div>
+              </div>
+          </div>
+
+          {/* Live Heatmap (ScatterChart) */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+              <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-rose-500" />
+                    Live Heatmap (Issue Hotspots)
+                  </h3>
+                  <div className="flex gap-2">
+                      <span className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
+                      <span className="text-xs text-slate-500 font-bold">High Density</span>
+                  </div>
+              </div>
+              <p className="text-xs text-slate-500 mb-6">Geographic clustering of active civic reports</p>
+              
+              <div className="flex-1 min-h-[300px] w-full rounded-lg bg-slate-900 border border-slate-800 relative overflow-hidden flex items-center justify-center">
+                  {/* Subtle Grid Background to simulate a map surface */}
+                  <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                  
+                  <ResponsiveContainer width="95%" height="90%">
+                      <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                          <XAxis type="number" dataKey="lng" name="Longitude" domain={['auto', 'auto']} hide />
+                          <YAxis type="number" dataKey="lat" name="Latitude" domain={['auto', 'auto']} hide />
+                          <ZAxis type="number" dataKey="upvotes" range={[60, 400]} name="Severity" />
+                          <Tooltip 
+                              cursor={{ strokeDasharray: '3 3' }}
+                              content={({ active, payload }) => {
+                                  if (active && payload && payload.length) {
+                                      const data = payload[0].payload;
+                                      return (
+                                          <div className="bg-slate-800 border border-slate-700 text-white p-3 rounded-lg shadow-xl text-xs z-50 relative">
+                                              <p className="font-bold text-rose-400">{data.category} Issue</p>
+                                              <p className="mt-1">{data.location || "Unknown Location"}</p>
+                                              <p className="text-slate-400 mt-1">Upvotes: {data.upvotes || 0}</p>
+                                              <p className="text-slate-400">Status: {data.status}</p>
+                                          </div>
+                                      );
+                                  }
+                                  return null;
+                              }}
+                          />
+                          <Scatter 
+                              name="Issues" 
+                              data={issues.filter(i => i.lat && i.lng).map(i => ({...i, upvotes: Math.max(i.upvotes || 0, 1)}))} 
+                              fill="#f43f5e" 
+                              opacity={0.7}
+                          />
+                      </ScatterChart>
+                  </ResponsiveContainer>
               </div>
           </div>
 

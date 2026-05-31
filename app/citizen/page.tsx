@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { api } from "@/lib/api";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, CheckCircle, FileText, AlertTriangle, MapPin, ChevronRight, Phone, Sparkles, TrendingUp, Users, Clock } from 'lucide-react';
+import { BookOpen, CheckCircle, FileText, AlertTriangle, MapPin, ChevronRight, Phone, Sparkles, TrendingUp, Users, Clock, Activity } from 'lucide-react';
 import AppShell from '@/components/AppShell';
 import { useAuthStore } from '@/lib/auth';
 import { labelsEn } from '@/config/labels.en';
@@ -65,6 +65,16 @@ export default function CitizenPage() {
       bg: 'bg-amber-50',
       text: 'text-amber-600',
       shadow: 'hover:shadow-amber-500/10',
+    },
+    {
+      title: t.volunteerTitle || (language === 'en' ? 'Become a Volunteer' : 'தன்னார்வலராகுங்கள்'),
+      desc: t.volunteerDesc || (language === 'en' ? 'Help improve your community' : 'உங்கள் சமூகத்தை மேம்படுத்த உதவுங்கள்'),
+      icon: Users,
+      href: '/citizen/volunteer',
+      gradient: 'from-rose-500 to-pink-600',
+      bg: 'bg-rose-50',
+      text: 'text-rose-600',
+      shadow: 'hover:shadow-rose-500/10',
     }
   ];
 
@@ -177,6 +187,57 @@ export default function CitizenPage() {
               </Card>
             </Link>
           ))}
+        </div>
+
+        {/* Recent Tracking and Updates Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          {/* Tracking Issues */}
+          <Card className="p-6 border-slate-100 shadow-sm rounded-2xl h-full bg-white dark:bg-slate-900 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-sky-500" />
+              {t.trackingIssues || 'Tracking Issues'}
+            </h3>
+            <div className="space-y-4">
+              {/* Dummy data for tracking issues since we can't reliably fetch it here without auth complexity on the page load */}
+              <div className="flex items-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                <div className="w-2 h-2 mt-2 rounded-full bg-amber-500 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{language === 'en' ? 'Pothole on Main St' : 'பிரதான வீதியில் பள்ளம்'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{language === 'en' ? 'Status: In Progress' : 'நிலை: நடந்து கொண்டிருக்கிறது'}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+                <div className="w-2 h-2 mt-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{language === 'en' ? 'Streetlight not working' : 'தெருவிளக்கு எரியவில்லை'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{language === 'en' ? 'Status: Resolved' : 'நிலை: தீர்க்கப்பட்டது'}</p>
+                </div>
+              </div>
+              <Link href="/citizen/my-issues" className="inline-block mt-2 text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 font-medium">
+                {language === 'en' ? 'View all my issues →' : 'எனது அனைத்து புகார்களையும் காண்க →'}
+              </Link>
+            </div>
+          </Card>
+
+          {/* Announcements & Updates */}
+          <Card className="p-6 border-slate-100 shadow-sm rounded-2xl h-full bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-900 dark:to-slate-900 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-400 mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-indigo-500" />
+              {t.recentUpdates || 'Announcements & Updates'}
+            </h3>
+            <div className="space-y-4">
+              <div className="bg-white/60 dark:bg-slate-800/60 p-3 rounded-xl border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+                <span className="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-500/20 px-2 py-0.5 rounded-full mb-1 inline-block">New</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{language === 'en' ? 'Tamil Puthalvan Scheme Launched' : 'தமிழ் புதல்வன் திட்டம் தொடங்கப்பட்டது'}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{language === 'en' ? 'Rs. 1000/month for boys from Govt schools pursuing higher education.' : 'உயர்கல்வி பயிலும் அரசு பள்ளி மாணவர்களுக்கு மாதம் ரூ.1000.'}</p>
+              </div>
+              <div className="bg-white/60 dark:bg-slate-800/60 p-3 rounded-xl border border-white/50 dark:border-slate-700/50 backdrop-blur-sm">
+                <span className="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.5 rounded-full mb-1 inline-block">Update</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{language === 'en' ? 'CM Breakfast Scheme Expanded' : 'முதல்வர் காலை உணவு திட்டம் விரிவாக்கம்'}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{language === 'en' ? 'Now available in all Govt-aided rural schools.' : 'இப்போது அனைத்து அரசு உதவி பெறும் ஊரகப் பள்ளிகளிலும்.'}</p>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Helpline Banner */}

@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { 
   Search, GraduationCap, Heart, ShoppingCart, Users, 
   ChevronRight, X, FileText, CheckCircle, Wheat, Baby, 
-  BookOpen, Stethoscope, Banknote 
+  BookOpen, Stethoscope, Banknote, Home, Sparkles, Brain
 } from 'lucide-react';
 import AppShell from '@/components/AppShell';
 import { useAuthStore } from '@/lib/auth';
@@ -31,6 +31,7 @@ interface Scheme {
   docsEn: string[];
   docsTa: string[];
   icon: React.ElementType;
+  status?: 'Active' | 'Upcoming';
 }
 
 type BackendPolicy = {
@@ -45,53 +46,157 @@ type BackendPolicy = {
 };
 
 const SCHEMES_DATA: Scheme[] = [
+  // EDUCATION
   {
     id: 'edu-1',
     category: 'Education',
-    titleEn: 'Post-Matric Scholarship',
-    titleTa: 'மாணவர் கல்வி உதவித்தொகை',
-    descEn: 'Financial assistance for SC/ST students pursuing higher education in recognized institutions.',
-    descTa: 'கல்லூரிகளில் படிக்கும் ஆதி திராவிடர் மற்றும் பழங்குடியின மாணவர்களுக்கான நிதி உதவி.',
-    benefitsEn: 'Up to ₹50,000 / year coverage for tuition fees',
-    benefitsTa: 'கல்வி கட்டணத்திற்கு ஆண்டுக்கு ₹50,000 வரை',
-    eligibilityEn: ['Community Certificate (SC/ST)', 'Annual Family Income < ₹2.5 Lakhs', 'Admission in recognized college'],
-    eligibilityTa: ['ஜாதி சான்றிதழ் (SC/ST)', 'குடும்ப ஆண்டு வருமானம் ₹2.5 லட்சத்திற்கு கீழ்', 'கல்லூரி சேர்க்கை'],
-    docsEn: ['Aadhaar Card', 'Income Certificate', 'Community Certificate', 'Bank Passbook'],
-    docsTa: ['ஆதார் அட்டை', 'வருமான சான்றிதழ்', 'ஜாதி சான்றிதழ்', 'வங்கி கணக்கு புத்தகம்'],
-    icon: GraduationCap
+    titleEn: 'Pudhumai Penn Scheme',
+    titleTa: 'புதுமைப் பெண் திட்டம்',
+    descEn: 'Monthly financial assistance to girl students who studied in government schools from Classes 6 to 12 to pursue higher education.',
+    descTa: 'அரசுப் பள்ளிகளில் 6 முதல் 12 ஆம் வகுப்பு வரை பயின்ற மாணவிகள் உயர்கல்வி பயில மாதாந்திர நிதியுதவி.',
+    benefitsEn: '₹1,000 per month directly to bank account',
+    benefitsTa: 'மாதம் ₹1,000 வங்கிக் கணக்கில்',
+    eligibilityEn: ['Girl student', 'Studied in Govt school (6th to 12th)', 'Pursuing UG / Diploma / ITI'],
+    eligibilityTa: ['மாணவி', 'அரசுப் பள்ளியில் படித்தவர் (6-12)', 'இளங்கலை / டிப்ளமோ / ஐடிஐ'],
+    docsEn: ['Aadhaar', 'School TC', 'Bank Passbook', 'College ID'],
+    docsTa: ['ஆதார்', 'பள்ளி மாற்றுச் சான்றிதழ்', 'வங்கி புத்தகம்', 'கல்லூரி அட்டை'],
+    icon: GraduationCap,
+    status: 'Active'
   },
   {
     id: 'edu-2',
     category: 'Education',
-    titleEn: 'Free Laptop Scheme',
-    titleTa: 'இலவச மடிக்கணினி திட்டம்',
-    descEn: 'Free laptops for students studying in Government and Government-aided schools/colleges.',
-    descTa: 'அரசு மற்றும் அரசு உதவி பெறும் பள்ளிகளில் படிக்கும் மாணவர்களுக்கு இலவச மடிக்கணினி.',
-    benefitsEn: 'High-spec Laptop for digital learning',
-    benefitsTa: 'டிஜிட்டல் கற்றலுக்கான மடிக்கணினி',
-    eligibilityEn: ['Studying in 11th/12th or College', 'Govt/Aided Institution'],
-    eligibilityTa: ['11/12 ஆம் வகுப்பு அல்லது கல்லூரி மாணவர்', 'அரசு/உதவி பெறும் பள்ளி'],
-    docsEn: ['Student ID Card', 'Aadhaar Card'],
-    docsTa: ['மாணவர் அடையாள அட்டை', 'ஆதார் அட்டை'],
-    icon: BookOpen
+    titleEn: 'Tamil Puthalvan Scheme',
+    titleTa: 'தமிழ் புதல்வன் திட்டம்',
+    descEn: 'Monthly financial assistance for boys who studied in government/Tamil-medium schools to support their higher education.',
+    descTa: 'அரசு/தமிழ் வழி பள்ளிகளில் பயின்ற மாணவர்களின் உயர்கல்விக்கு ஆதரவாக மாதாந்திர நிதியுதவி.',
+    benefitsEn: '₹1,000 per month',
+    benefitsTa: 'மாதம் ₹1,000',
+    eligibilityEn: ['Boy student', 'Studied in Govt/Tamil-medium school (6th to 12th)', 'Pursuing Higher Education'],
+    eligibilityTa: ['மாணவர்', 'அரசு/தமிழ் வழி பள்ளியில் படித்தவர்', 'உயர்கல்வி பயிலும் மாணவர்'],
+    docsEn: ['Aadhaar', 'School TC', 'Bank Passbook', 'College ID'],
+    docsTa: ['ஆதார்', 'பள்ளி மாற்றுச் சான்றிதழ்', 'வங்கி புத்தகம்', 'கல்லூரி அட்டை'],
+    icon: BookOpen,
+    status: 'Active'
   },
+  {
+    id: 'edu-3',
+    category: 'Education',
+    titleEn: 'Naan Mudhalvan Scheme',
+    titleTa: 'நான் முதல்வன் திட்டம்',
+    descEn: 'Massive skill development and career guidance initiative for students to make them highly employable.',
+    descTa: 'மாணவர்களை அதிக வேலைவாய்ப்புக்கு தகுதியுடையவர்களாக மாற்றுவதற்கான திறன் மேம்பாடு மற்றும் தொழில் வழிகாட்டுதல் திட்டம்.',
+    benefitsEn: 'Free skill training, competitive exam coaching, career guidance',
+    benefitsTa: 'இலவச திறன் பயிற்சி, போட்டித் தேர்வு பயிற்சி, தொழில் வழிகாட்டுதல்',
+    eligibilityEn: ['College students', 'Unemployed youth'],
+    eligibilityTa: ['கல்லூரி மாணவர்கள்', 'வேலையற்ற இளைஞர்கள்'],
+    docsEn: ['Student ID / Degree Certificate'],
+    docsTa: ['மாணவர் அட்டை / பட்டச் சான்றிதழ்'],
+    icon: Sparkles,
+    status: 'Active'
+  },
+  
+  // WELFARE
+  {
+    id: 'wel-1',
+    category: 'Welfare',
+    titleEn: 'Kalaignar Magalir Urimai Thogai',
+    titleTa: 'கலைஞர் மகளிர் உரிமைத் தொகை',
+    descEn: 'Financial assistance scheme to recognize the lifetime work of women heads of households.',
+    descTa: 'குடும்பத் தலைவிகளின் வாழ்நாள் உழைப்பை அங்கீகரிக்கும் நிதியுதவித் திட்டம்.',
+    benefitsEn: '₹1,000 per month',
+    benefitsTa: 'மாதம் ₹1,000',
+    eligibilityEn: ['Woman head of household', 'Age > 21', 'Family income < ₹2.5 Lakhs/year', 'No income tax payees in family'],
+    eligibilityTa: ['குடும்பத் தலைவி', 'வயது 21+', 'குடும்ப வருமானம் ₹2.5 லட்சத்திற்கு கீழ்', 'வருமான வரி செலுத்துவோர் இல்லை'],
+    docsEn: ['Aadhaar Card', 'Ration Card', 'Bank Passbook'],
+    docsTa: ['ஆதார் அட்டை', 'ரேஷன் அட்டை', 'வங்கி புத்தகம்'],
+    icon: Heart,
+    status: 'Active'
+  },
+  {
+    id: 'wel-2',
+    category: 'Welfare',
+    titleEn: 'Vidiyal Payanam',
+    titleTa: 'விடியல் பயணம்',
+    descEn: 'Free travel scheme for women, persons with disabilities, and transgender persons in ordinary state buses.',
+    descTa: 'சாதாரண அரசுப் பேருந்துகளில் பெண்கள், மாற்றுத்திறனாளிகள் மற்றும் திருநங்கைகளுக்கான இலவச பயணத் திட்டம்.',
+    benefitsEn: 'Free travel in white-board town buses',
+    benefitsTa: 'வெள்ளைப் பலகை நகரப் பேருந்துகளில் இலவச பயணம்',
+    eligibilityEn: ['Women', 'Persons with Disabilities', 'Transgender persons'],
+    eligibilityTa: ['பெண்கள்', 'மாற்றுத்திறனாளிகள்', 'திருநங்கைகள்'],
+    docsEn: ['None needed for women (ID for PwD/Transgender)'],
+    docsTa: ['பெண்களுக்கு எதுவும் தேவையில்லை'],
+    icon: Users,
+    status: 'Active'
+  },
+  {
+    id: 'wel-3',
+    category: 'Welfare',
+    titleEn: 'Kalaignarin Kanavu Illam',
+    titleTa: 'கலைஞரின் கனவு இல்லம்',
+    descEn: 'Rural housing scheme to provide permanent, safe concrete homes replacing huts.',
+    descTa: 'குடிசைகளுக்குப் பதிலாக நிரந்தரமான, பாதுகாப்பான கான்கிரீட் வீடுகளை வழங்கும் ஊரக வீட்டுவசதித் திட்டம்.',
+    benefitsEn: '₹3.5 Lakhs per house construction',
+    benefitsTa: 'ஒரு வீட்டிற்கு ₹3.5 லட்சம்',
+    eligibilityEn: ['Living in hut/slum', 'No concrete house in family', 'BPL category'],
+    eligibilityTa: ['குடிசையில் வசிப்பவர்', 'கான்கிரீட் வீடு இல்லை', 'வறுமைக் கோட்டிற்கு கீழ்'],
+    docsEn: ['Aadhaar', 'Ration Card', 'Land Patta (if any)'],
+    docsTa: ['ஆதார்', 'ரேஷன் அட்டை', 'நில பட்டா'],
+    icon: Home,
+    status: 'Active'
+  },
+  {
+    id: 'wel-4',
+    category: 'Welfare',
+    titleEn: 'Thayumanavar Thittam',
+    titleTa: 'தாயுமானவர் திட்டம்',
+    descEn: 'Assistance for severely economically backward families, especially those where children lost parents.',
+    descTa: 'கடுமையாகப் பொருளாதாரத்தில் பின்தங்கிய குடும்பங்களுக்கு, குறிப்பாக பெற்றோரை இழந்த குழந்தைகளுக்கு உதவுதல்.',
+    benefitsEn: '₹2,000 per month',
+    benefitsTa: 'மாதம் ₹2,000',
+    eligibilityEn: ['Extreme poverty', 'Orphaned children / destitute'],
+    eligibilityTa: ['கடுமையான வறுமை', 'ஆதரவற்ற குழந்தைகள்'],
+    docsEn: ['Death certificate of parents', 'Income certificate'],
+    docsTa: ['பெற்றோரின் இறப்பு சான்றிதழ்', 'வருமான சான்றிதழ்'],
+    icon: Heart,
+    status: 'Active'
+  },
+  {
+    id: 'wel-5',
+    category: 'Welfare',
+    titleEn: 'CM-ARISE Scheme',
+    titleTa: 'முதலமைச்சர்-ARISE திட்டம்',
+    descEn: 'Chief Minister’s Adi Dravidar and Tribal Socio-Economic Development Scheme for entrepreneurs.',
+    descTa: 'முதலமைச்சரின் ஆதிதிராவிடர் மற்றும் பழங்குடியினர் சமூகப் பொருளாதார மேம்பாட்டுத் திட்டம்.',
+    benefitsEn: 'Loans up to ₹10 Lakhs with 35% interest subsidy',
+    benefitsTa: '₹10 லட்சம் வரை கடன், 35% வட்டி மானியம்',
+    eligibilityEn: ['SC/ST entrepreneur', 'Age 18-55'],
+    eligibilityTa: ['SC/ST தொழில்முனைவோர்', 'வயது 18-55'],
+    docsEn: ['Community Certificate', 'Project Report'],
+    docsTa: ['ஜாதி சான்றிதழ்', 'திட்ட அறிக்கை'],
+    icon: Banknote,
+    status: 'Active'
+  },
+  {
+    id: 'wel-6',
+    category: 'Welfare',
+    titleEn: 'Thozhi Hostels',
+    titleTa: 'தோழி விடுதிகள்',
+    descEn: 'Safe and affordable working women hostels across various districts.',
+    descTa: 'பல்வேறு மாவட்டங்களில் பாதுகாப்பான மற்றும் மலிவு விலை உழைக்கும் மகளிர் விடுதிகள்.',
+    benefitsEn: 'Subsidized safe accommodation',
+    benefitsTa: 'மானியம் பெற்ற பாதுகாப்பான தங்குமிடம்',
+    eligibilityEn: ['Working women', 'Distance from home town'],
+    eligibilityTa: ['பணிபுரியும் பெண்கள்', 'சொந்த ஊரிலிருந்து தூரம்'],
+    docsEn: ['Employment proof', 'ID proof'],
+    docsTa: ['பணி சான்றிதழ்', 'அடையாள அட்டை'],
+    icon: Users,
+    status: 'Active'
+  },
+
+  // HEALTH / PDS
   {
     id: 'health-1',
-    category: 'Health',
-    titleEn: 'Dr. Muthulakshmi Maternity Benefit',
-    titleTa: 'டாக்டர் முத்துலட்சுமி மகப்பேறு உதவி',
-    descEn: 'Financial assistance to poor pregnant women for nutritional support.',
-    descTa: 'ஏழை கர்ப்பிணிப் பெண்களுக்கு ஊட்டச்சத்து ஆதரவுக்கான நிதி உதவி.',
-    benefitsEn: '₹18,000 in 5 installments + Nutrition Kit',
-    benefitsTa: '5 தவணைகளில் ₹18,000 + ஊட்டச்சத்து பெட்டகம்',
-    eligibilityEn: ['Age > 19 years', 'Limited to 2 children', 'BPL Family'],
-    eligibilityTa: ['வயது 19 க்கு மேல்', '2 குழந்தைகளுக்கு மட்டும்', 'வறுமை கோட்டிற்கு கீழ்'],
-    docsEn: ['RCH ID', 'Aadhaar', 'Bank Passbook'],
-    docsTa: ['RCH எண்', 'ஆதார்', 'வங்கி கணக்கு புத்தகம்'],
-    icon: Baby
-  },
-  {
-    id: 'health-2',
     category: 'Health',
     titleEn: 'CM Comprehensive Health Insurance',
     titleTa: 'முதல்வரின் காப்பீட்டுத் திட்டம்',
@@ -99,56 +204,62 @@ const SCHEMES_DATA: Scheme[] = [
     descTa: 'குறிப்பிட்ட நோய்களுக்கு மருத்துவமனையில் இலவச சிகிச்சை.',
     benefitsEn: 'Coverage up to ₹5 Lakhs / year',
     benefitsTa: 'ஆண்டுக்கு ₹5 லட்சம் வரை காப்பீடு',
-    eligibilityEn: ['Annual Income < ₹72,000', 'Valid Ration Card'],
-    eligibilityTa: ['ஆண்டு வருமானம் ₹72,000 க்கு கீழ்', 'ரேஷன் அட்டை'],
-    docsEn: ['Family Ration Card', 'Income Certificate'],
-    docsTa: ['குடும்ப ரேஷன் அட்டை', 'வருமான சான்றிதழ்'],
-    icon: Stethoscope
+    eligibilityEn: ['Annual Income < ₹1.2 Lakhs', 'Valid Ration Card'],
+    eligibilityTa: ['ஆண்டு வருமானம் ₹1.2 லட்சத்திற்கு கீழ்', 'ரேஷன் அட்டை'],
+    docsEn: ['Family Ration Card', 'Income Certificate', 'Aadhaar'],
+    docsTa: ['குடும்ப ரேஷன் அட்டை', 'வருமான சான்றிதழ்', 'ஆதார்'],
+    icon: Stethoscope,
+    status: 'Active'
   },
   {
-    id: 'pds-1',
-    category: 'PDS',
-    titleEn: 'Universal PDS (Rice)',
-    titleTa: 'இலவச அரிசி திட்டம்',
-    descEn: 'Supply of free rice to all eligible rice card holders.',
-    descTa: 'தகுதியுள்ள அனைத்து அட்டைதாரர்களுக்கும் இலவச அரிசி.',
-    benefitsEn: '20kg Free Rice per month',
-    benefitsTa: 'மாதம் 20 கிலோ இலவச அரிசி',
-    eligibilityEn: ['Valid PHH / AAY Ration Card'],
-    eligibilityTa: ['செல்லுபடியாகும் ரேஷன் அட்டை'],
-    docsEn: ['Smart Ration Card'],
-    docsTa: ['ஸ்ார்ட் ரேஷன் அட்டை'],
-    icon: Wheat
+    id: 'health-2',
+    category: 'Health',
+    titleEn: 'Chief Minister’s Breakfast Scheme',
+    titleTa: 'முதலமைச்சரின் காலை உணவுத் திட்டம்',
+    descEn: 'Nutritious breakfast for primary school children (Classes 1 to 5) in Govt and Govt-aided schools.',
+    descTa: 'அரசு மற்றும் அரசு உதவி பெறும் பள்ளிகளில் 1 முதல் 5 ஆம் வகுப்பு வரை படிக்கும் குழந்தைகளுக்கு சத்தான காலை உணவு.',
+    benefitsEn: 'Hot cooked breakfast on all school days',
+    benefitsTa: 'அனைத்து பள்ளி நாட்களிலும் சூடான காலை உணவு',
+    eligibilityEn: ['Studying in Classes 1-5', 'Govt or Govt-aided school'],
+    eligibilityTa: ['1-5 வகுப்பு மாணவர்', 'அரசு/உதவி பெறும் பள்ளி'],
+    docsEn: ['None needed (provided directly in schools)'],
+    docsTa: ['எதுவும் தேவையில்லை'],
+    icon: Baby,
+    status: 'Active'
   },
+  
+  // UPCOMING SCHEMES
   {
-    id: 'welfare-1',
+    id: 'upc-1',
     category: 'Welfare',
-    titleEn: 'Moovalur Ramamirtham Marriage Scheme',
-    titleTa: 'மூவலூர் ராமாமிர்தம் திருமண உதவி',
-    descEn: 'Assistance for marriage of girls from poor families who have completed education.',
-    descTa: 'கல்வி முடித்த ஏழை குடும்பத்து பெண்களுக்கு திருமண உதவி.',
-    benefitsEn: '₹25,000 / ₹50,000 + 8gm Gold Coin',
-    benefitsTa: '₹25,000 / ₹50,000 + 8 கிராம் தங்கம்',
-    eligibilityEn: ['Bride age > 18', 'Completed 10th/Degree', 'Income < ₹72,000'],
-    eligibilityTa: ['மணமகள் வயது 18+', '10ம் வகுப்பு/பட்டப்படிப்பு', 'வருமானம் < ₹72,000'],
-    docsEn: ['Educational Certificate', 'Community Certificate', 'Income Certificate'],
-    docsTa: ['கல்வி சான்றிதழ்', 'ஜாதி சான்றிதழ்', 'வருமான சான்றிதழ்'],
-    icon: Heart
+    titleEn: 'Payroll Subsidies for Inclusive Hiring',
+    titleTa: 'உள்ளடக்கிய வேலைவாய்ப்பிற்கான மானியம்',
+    descEn: 'Upcoming scheme to provide 10% payroll subsidy for two years for new industrial units employing over 500 women, PwD, or transgender persons.',
+    descTa: '500 க்கும் மேற்பட்ட பெண்கள், மாற்றுத்திறனாளிகள் அல்லது திருநங்கைகளை வேலைக்கு அமர்த்தும் புதிய தொழில் நிறுவனங்களுக்கு 2 ஆண்டுகளுக்கு 10% மானியம்.',
+    benefitsEn: '10% payroll subsidy to employers',
+    benefitsTa: 'நிறுவனங்களுக்கு 10% ஊதிய மானியம்',
+    eligibilityEn: ['New industrial units', 'Employing 500+ women/PwD/Transgender'],
+    eligibilityTa: ['புதிய தொழில் நிறுவனங்கள்', '500+ பேருக்கு வேலைவாய்ப்பு'],
+    docsEn: ['Company Registration', 'Payroll Records'],
+    docsTa: ['நிறுவன பதிவு', 'ஊதியப் பதிவேடுகள்'],
+    icon: Banknote,
+    status: 'Upcoming'
   },
   {
-    id: 'welfare-2',
-    category: 'Welfare',
-    titleEn: 'Old Age Pension (OAP)',
-    titleTa: 'முதியோர் ஓய்வூதியம்',
-    descEn: 'Monthly pension for destitute senior citizens.',
-    descTa: 'ஆதரவற்ற மூத்த குடிமக்களுக்கு மாத ஓய்வூதியம்.',
-    benefitsEn: '₹1,000 / month',
-    benefitsTa: 'மாதம் ₹1,000',
-    eligibilityEn: ['Age > 60', 'No support from family', 'Destitute'],
-    eligibilityTa: ['வயது 60+', 'குடும்ப ஆதரவு இல்லை', 'ஆதரவற்றவர்'],
-    docsEn: ['Age Proof', 'Aadhaar Card'],
-    docsTa: ['வயது சான்று', 'ஆதார் அட்டை'],
-    icon: Banknote
+    id: 'upc-2',
+    category: 'Education',
+    titleEn: 'Tamil Nadu AI Mission',
+    titleTa: 'தமிழ்நாடு AI மிஷன்',
+    descEn: 'Initiative to develop guidelines for AI usage in various sectors and support startups developing Tamil language AI models.',
+    descTa: 'பல்வேறு துறைகளில் AI பயன்பாட்டிற்கான வழிகாட்டுதல்களை உருவாக்கவும், தமிழ் AI மாடல்களை உருவாக்கும் நிறுவனங்களை ஆதரிக்கவும்.',
+    benefitsEn: 'Grants, computing resources, policy support',
+    benefitsTa: 'மானியங்கள், வளங்கள், கொள்கை ஆதரவு',
+    eligibilityEn: ['Tech Startups', 'Researchers in AI', 'Tamil NLP developers'],
+    eligibilityTa: ['தொழில்நுட்ப நிறுவனங்கள்', 'AI ஆராய்ச்சியாளர்கள்'],
+    docsEn: ['Project Proposal', 'Company Details'],
+    docsTa: ['திட்ட அறிக்கை', 'நிறுவன விவரங்கள்'],
+    icon: Brain,
+    status: 'Upcoming'
   }
 ];
 
@@ -342,8 +453,12 @@ export default function SchemesPage() {
                     <div className="p-3 bg-tn-50 text-tn-600 rounded-xl group-hover:scale-110 transition-transform">
                       <scheme.icon className="w-6 h-6" aria-hidden="true" />
                     </div>
-                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-200">
-                      {activeTab === 'All' ? (language === 'en' ? scheme.category : (CATEGORIES.find(c => c.id === scheme.category)?.labelTa)) : (language === 'en' ? 'Active' : 'செயலில்')}
+                    <Badge variant="secondary" className={scheme.status === 'Upcoming' ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}>
+                      {activeTab === 'All' 
+                        ? (language === 'en' ? scheme.category : (CATEGORIES.find(c => c.id === scheme.category)?.labelTa)) 
+                        : (scheme.status === 'Upcoming' 
+                           ? (language === 'en' ? 'Upcoming' : 'விரைவில்') 
+                           : (language === 'en' ? 'Active' : 'செயலில்'))}
                     </Badge>
                   </div>
 
